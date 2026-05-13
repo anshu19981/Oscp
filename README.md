@@ -1,4 +1,4 @@
-markdown
+
 # OSCP+ Complete Exam Checklist & Attack Chains (2025-26)
 > **PEN-200 Current Edition | Exam Format: 3 Standalone Boxes + 1 AD Set (3 machines)**
 > **Passing Score: 70/100 pts | AD Set: 40 pts | Standalones: 20 pts each**
