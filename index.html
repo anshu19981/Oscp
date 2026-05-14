@@ -479,9 +479,165 @@
 
   /* ─── Selection ─── */
   ::selection { background: rgba(0,255,136,0.2); color: #fff; }
+
+  /* ══════════════════════════════════════════
+     LIGHT MODE
+  ══════════════════════════════════════════ */
+  [data-theme="light"] {
+    --bg:         #f2f4f8;
+    --bg2:        #eaecf2;
+    --bg3:        #e2e5ed;
+    --panel:      #ffffff;
+    --border:     #cdd2df;
+    --accent:     #009955;
+    --accent2:    #0077cc;
+    --accent3:    #d63050;
+    --accent4:    #c47f00;
+    --text:       #1c2333;
+    --text-dim:   #8a96aa;
+    --text-mid:   #4a5570;
+    --code-bg:    #edf0f7;
+    --code-border:#d0d5e4;
+    --glow:       0 0 20px rgba(0,153,85,0.10);
+    --glow2:      0 0 20px rgba(0,119,204,0.10);
+  }
+
+  [data-theme="light"] body::before {
+    background-image:
+      linear-gradient(rgba(0,100,60,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,100,60,0.04) 1px, transparent 1px);
+  }
+
+  [data-theme="light"] body::after {
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,119,204,0.06) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0,153,85,0.05) 0%, transparent 60%);
+  }
+
+  [data-theme="light"] h1 { color: #0e1525; }
+  [data-theme="light"] h2 { color: #0e1525; }
+  [data-theme="light"] pre code { color: #2a3450; }
+  [data-theme="light"] code { color: #1e6090; }
+  [data-theme="light"] p code, [data-theme="light"] li code { color: var(--accent2); }
+  [data-theme="light"] .callout { color: #2d5a7a; }
+  [data-theme="light"] .callout strong { color: #0e1525; }
+  [data-theme="light"] .callout.green { color: #1a5e38; }
+  [data-theme="light"] .callout.red { color: #7a1e2e; }
+  [data-theme="light"] .warning-banner { color: #7a2030; background: rgba(214,48,80,0.07); }
+  [data-theme="light"] .tree-box { color: #3a4d6a; }
+  [data-theme="light"] tbody tr:hover { background: rgba(0,119,204,0.04); }
+  [data-theme="light"] td { color: var(--text); }
+  [data-theme="light"] ::selection { background: rgba(0,119,204,0.18); color: #0e1525; }
+  [data-theme="light"] .header-badge { background: rgba(0,153,85,0.10); border-color: rgba(0,153,85,0.30); }
+  [data-theme="light"] .checklist li { color: var(--text-mid); }
+  [data-theme="light"] footer { color: var(--text-dim); }
+  [data-theme="light"] .meta-pill { color: var(--text-mid); }
+
+  /* ══════════════════════════════════════════
+     THEME TOGGLE BUTTON
+  ══════════════════════════════════════════ */
+  #theme-toggle {
+    position: fixed;
+    top: 14px;
+    right: 14px;
+    z-index: 9999;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    cursor: pointer;
+    font-size: 19px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    padding: 0;
+    line-height: 1;
+  }
+
+  #theme-toggle:hover {
+    border-color: var(--accent2);
+    transform: scale(1.08);
+  }
+
+  /* ══════════════════════════════════════════
+     MOBILE — RESPONSIVE
+  ══════════════════════════════════════════ */
+  @media (max-width: 768px) {
+    body { font-size: 13px; }
+
+    .wrapper { padding: 0 14px 60px; }
+
+    header { padding: 36px 0 22px; padding-right: 52px; margin-bottom: 28px; }
+
+    h1 { font-size: clamp(22px, 6vw, 32px); letter-spacing: -0.5px; }
+    h2 { font-size: 17px; }
+    h3 { font-size: 12.5px; margin: 20px 0 10px; }
+
+    .meta-row { gap: 7px; margin-top: 14px; }
+    .meta-pill { font-size: 10.5px; padding: 4px 9px; }
+
+    .toc { padding: 18px 16px; margin-bottom: 36px; }
+    .toc ol { grid-template-columns: 1fr; gap: 2px; }
+    .toc a { font-size: 12px; }
+
+    .section { margin-bottom: 44px; }
+    .section-header { gap: 10px; margin-bottom: 20px; }
+
+    pre {
+      font-size: 11.5px;
+      padding: 14px 14px;
+      border-radius: 5px;
+      /* show horizontal scroll hint */
+      -webkit-overflow-scrolling: touch;
+    }
+
+    pre::after {
+      content: '→';
+      position: absolute;
+      top: 50%;
+      right: 8px;
+      transform: translateY(-50%);
+      font-size: 11px;
+      color: var(--text-dim);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .table-wrap { border-radius: 4px; }
+    table { font-size: 12px; }
+    thead th { padding: 9px 12px; font-size: 10px; }
+    td { padding: 8px 12px; }
+    td:first-child { white-space: normal; }
+
+    .points-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .point-card { padding: 12px 14px; }
+    .point-card .pts { font-size: 22px; }
+
+    .scenario-grid { grid-template-columns: 1fr; gap: 8px; }
+
+    .callout { padding: 12px 14px; font-size: 12px; }
+    .warning-banner { padding: 12px 14px; font-size: 12px; margin-bottom: 28px; }
+
+    .checklist li { font-size: 12px; }
+
+    .tree-box { font-size: 11px; padding: 14px 14px; }
+
+    footer { flex-direction: column; align-items: flex-start; gap: 6px; font-size: 11px; padding: 24px 0 0; }
+
+    #theme-toggle { top: 10px; right: 10px; width: 38px; height: 38px; font-size: 17px; }
+  }
+
+  @media (max-width: 420px) {
+    .points-grid { grid-template-columns: 1fr; }
+    pre { font-size: 11px; }
+    .toc a::before { display: none; }
+  }
 </style>
 </head>
 <body>
+<button id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
 <div class="wrapper">
 
 <!-- ═══════════════════ HEADER ═══════════════════ -->
@@ -1897,5 +2053,32 @@ echo 'root2::0:0::/root:/bin/bash' | sudo tee -a /etc/passwd</code></pre>
 </footer>
 
 </div>
+<script>
+  // ── Theme toggle ──────────────────────────────────────────
+  const html = document.documentElement;
+  const btn  = document.getElementById('theme-toggle');
+
+  function toggleTheme() {
+    const isLight = html.getAttribute('data-theme') === 'light';
+    if (isLight) {
+      html.removeAttribute('data-theme');
+      btn.textContent = '🌙';
+      localStorage.setItem('oscp-theme', 'dark');
+    } else {
+      html.setAttribute('data-theme', 'light');
+      btn.textContent = '☀️';
+      localStorage.setItem('oscp-theme', 'light');
+    }
+  }
+
+  // Apply saved preference immediately (no flash)
+  (function() {
+    const saved = localStorage.getItem('oscp-theme');
+    if (saved === 'light') {
+      html.setAttribute('data-theme', 'light');
+      btn.textContent = '☀️';
+    }
+  })();
+</script>
 </body>
 </html>
